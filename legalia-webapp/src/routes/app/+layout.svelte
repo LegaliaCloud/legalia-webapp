@@ -1,6 +1,8 @@
 <script lang="ts">
+    import '../../app.css';
 	import Navbar from '$lib/components/navbar/navbar.svelte';
 	import Sidebar from '$lib/components/sidebar/sidebar.svelte';
+    import Chat from '$lib/components/chat/chat.svelte';
   </script>
   
   <div class="min-h-screen bg-white">
@@ -15,7 +17,7 @@
 		
 		<!-- Center column (3X width) -->
 		<div class="col-span-3">
-		  <slot></slot>
+		  <Chat></Chat>
 		</div>
 		
 		<!-- Last column (1X width) -->
