@@ -13,7 +13,7 @@
     <div class="chat-header pr-2">
         {username}
     </div>
-    <div class="chat-bubble bg-green-200 text-black">I hate you!</div>
+    <div class="chat-bubble bg-green-200 text-black">Ciao! Potresti aiutarmi nella scrittura di un parere legale?</div>
     <div class="chat-footer opacity-50">
         <time class="text-xs text-white">12:46</time>
     </div>

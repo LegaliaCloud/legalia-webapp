@@ -6,7 +6,7 @@
 </script>
 <div class="flex-1 flex flex-col pl-5">
     <ul class="menu menu-xs rounded-lg w-full max-w-xs text-xl">
-    <li class="menu-title text-2xl text-purple-100 mb-5">I tuoi file</li>
+    <li class="menu-title text-xl text-purple-100 mb-5">I tuoi file</li>
     <li>
         <a href="/">
         <Fileicon></Fileicon>

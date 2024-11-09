@@ -8,12 +8,12 @@
   
   <nav class="navbar bg-white">
     <div class="flex-1 ml-10">
-      <a href="/" class="font-bold text-purple-900 text-4xl">LegalIA</a>
+      <a href="/" class="font-bold text-purple-900 text-2xl">LegalIA</a>
     </div>
     
     <div class="flex-none gap-4 mr-24">
       <div class="hidden md:flex text-gray-800">
-        <ul class="menu menu-horizontal px-1 text-xl mr-7">
+        <ul class="menu menu-horizontal px-1 text-lg mr-7">
           <li>
             <a 
               href="app/chatbot" 
@@ -34,7 +34,7 @@
       </div>
       
       <div class="dropdown dropdown-end">
-        <div tabindex="0" role="button" class="btn btn-ghost btn-circle avatar w-24">
+        <div tabindex="0" role="button" class="btn btn-ghost btn-circle avatar w-16">
           <div class="ring-primary ring-offset-base-100 w-24 rounded-full ring ring-offset-[0.3px]">
             <img alt="User avatar" src={userImageUrl} />
           </div>

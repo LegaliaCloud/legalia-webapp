@@ -9,7 +9,9 @@
     <div class="chat-header pl-2">
       Legal IA
     </div>
-    <div class="chat-bubble bg-purple-300 text-black">You were the Chosen One!</div>
+    <div class="chat-bubble bg-purple-300 text-black text-wrap">
+      Salve, sono Legalia, assistente AI nell'ambito della legge italiana. In cosa posso assisterla oggi?
+    </div>
     <div class="chat-footer opacity-50">
         <time class="text-xs text-white">12:45</time>
     </div>
