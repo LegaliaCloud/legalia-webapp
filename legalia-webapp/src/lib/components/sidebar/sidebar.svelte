@@ -21,7 +21,7 @@
     }
 </script>
 
-<div class="bg-purple-950 text-gray-200 pt-3 px-1 h-full w-full flex flex-col overflow-y-scroll">
+<div class="bg-purple-950 text-gray-200 pt-3 px-1 h-full w-full flex flex-col overflow-y-scroll" style="height: 82vh;">
     <!-- Projects Section -->
   <div class="flex-1 flex flex-col px-5">
     <ul class="menu w-full mb-2">

@@ -3,7 +3,7 @@
     
     
     // You might want to make this dynamic based on your auth system
-    const userImageUrl = 'https://plus.unsplash.com/premium_photo-1664474619075-644dd191935f?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8aW1hZ2V8ZW58MHx8MHx8fDA%3D';
+    const userImageUrl = 'https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp';
   </script>
   
   <nav class="navbar bg-white">
@@ -16,8 +16,8 @@
         <ul class="menu menu-horizontal px-1 text-lg mr-7">
           <li>
             <a 
-              href="app/chatbot" 
-              class="hover:text-purple-600 {$page.url.pathname === '/chatbot' ? 'text-purple-600' : ''}"
+              href="/app" 
+              class="hover:text-purple-600 {$page.url.pathname === '/app' ? 'text-purple-600' : ''}"
             >
               Chatbot
             </a>
@@ -40,8 +40,8 @@
           </div>
         </div>
         <ul class="dropdown-content menu bg-white rounded-box z-[1] w-52 p-2 shadow mt-2 items-center translate-x-14 text-l text-slate-900">
-          <li><a href="/abbonamento">Il tuo abbonamento</a></li>
-          <li><a href="/account">Il tuo account</a></li>
+          <li><a class="hover:bg-purple-950 hover:text-white" href="/plan">Il tuo abbonamento</a></li>
+          <li><a class="hover:bg-purple-950 hover:text-white" href="/account">Il tuo account</a></li>
           <li class="mt-5">
             <button 
               class="btn btn-error btn-sm text-white w-full"

@@ -5,7 +5,7 @@
         let index = Math.floor(Math.random()*colors.length);
         return colors[index];
     }
-
+    let a = RandomColor();
     export let title, date, emettitore: String; 
 </script>
 <div
