@@ -1,3 +1,7 @@
+<script lang="ts">
+    export let text: String; 
+</script>
+
 <div class="chat chat-start">
     <div class="chat-image avatar">
       <div class="w-10 rounded-full">
@@ -10,9 +14,9 @@
       Legal IA
     </div>
     <div class="chat-bubble bg-purple-300 text-black text-wrap">
-      Salve, sono Legalia, assistente AI nell'ambito della legge italiana. In cosa posso assisterla oggi?
+      {@html text}
     </div>
-    <div class="chat-footer opacity-50">
+    <!--<div class="chat-footer opacity-50">
         <time class="text-xs text-white">12:45</time>
-    </div>
+    </div>-->
 </div>

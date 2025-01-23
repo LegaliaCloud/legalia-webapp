@@ -6,7 +6,7 @@
 <div class="mx-8 px-6 py-4 bg-purple-950 rounded-box h-96">
   <div class="grid grid-rows-5 h-full">
     <div class="row-span-4">
-      <ChatbotMsg></ChatbotMsg>
+      <ChatbotMsg text="Salve, sono Legalia, assistente AI nell'ambito della legge italiana. In cosa posso assisterla oggi?"></ChatbotMsg>
       <UserMsg></UserMsg>
     </div>
     <div class="row-span-1">
