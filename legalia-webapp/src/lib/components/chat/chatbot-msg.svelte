@@ -1,5 +1,6 @@
 <script lang="ts">
-    export let text: String; 
+    import { marked } from "marked";
+    export let text: string; 
 </script>
 
 <div class="chat chat-start">
@@ -14,7 +15,7 @@
       Legal IA
     </div>
     <div class="chat-bubble bg-purple-300 text-black text-wrap">
-      {@html text}
+      {@html marked(text)}
     </div>
     <!--<div class="chat-footer opacity-50">
         <time class="text-xs text-white">12:45</time>

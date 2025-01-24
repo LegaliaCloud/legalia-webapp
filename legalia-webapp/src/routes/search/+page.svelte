@@ -17,9 +17,8 @@
     let documents:Documents = {};
     let analysis_text: string = "";
     let chat_history;
-
     let responseData = null;
-    let error = null;
+    let error:string = "";
 
     /*
     async function reasoning(id: number){
@@ -55,6 +54,7 @@
     }*/
 
     async function analysis(id: number){
+        error = "";
         analisi = true;
         reasoningLoading = true;
         analysis_text = "";
@@ -73,18 +73,28 @@
             }
             responseData = await response.json();
             analysisResponse = responseData.analysis;
+            analysis_text = '<h3 class="text-lg font-bold mb-2">' + documents[id].title + '</h3>';
+            analysis_text += "<b>PAROLE CHIAVE</b><br>";
+            let keywords:string[] = analysisResponse.keywords.split(', ');
+            analysis_text += '<div class="flex flex-wrap">'
+            keywords.forEach(key => {
+                analysis_text += '<div class="bg-warning m-2 py-2 px-4 text-black rounded-box font-semibold uppercase shadow-xl">' + key + '</div>'
+            });
+            analysis_text += '</div>'
             analysis_text += "<b>SOMMARIO</b><br>" + analysisResponse.summary +'<br>';
             analysis_text += "<br><b>ESITO PROCESSO</b><br>" + analysisResponse.esito_processo;
             chat_history = responseData.chat_history;
             //console.log(chat_history);
         } catch (err) {
             error = err.message;
+            analysis_text = "";
         } finally {
             reasoningLoading = false;
         }
     }
 
     async function rerank(){
+        error = "";
         rerankLoading = true;
         let payload = {"document_ids": doc_IDs};
         try {
@@ -95,7 +105,8 @@
                 body: JSON.stringify(payload)
             });
             if (!response.ok) {
-                throw new Error(`Errore HTTP: ${response.status}`);
+                error = `Errore HTTP: ${response.status}`;
+                throw new Error(error);
             }
             responseData = await response.json();
             if(responseData != null){
@@ -112,7 +123,10 @@
         try {
             const response = await fetch(`/document/${document_id}`);
             if (!response.ok) {
-                throw new Error(`Errore HTTP: ${response.status}`);
+                return {
+                    ok: false,
+                    error: `Errore HTTP: ${response.status}`
+                };
             }
             responseData = await response.json();
             return {
@@ -129,12 +143,14 @@
     }
     
     async function get_documents(){
+        error = "";
         GetDocsLoading = true;
         analisi = false;
         try {
             const response = await fetch(`/documents?question=${question}&k=15`);
             if (!response.ok) {
-                throw new Error(`Errore HTTP: ${response.status}`);
+                error = `Errore HTTP: ${response.status}`;
+                throw new Error(error);
             }
             responseData = await response.json();
             if(responseData != null){
@@ -171,7 +187,7 @@
                 <div class="text-balance py-4 text-white">
                     <h1 class="text-xl mx-12 font-serif font-bold my-4">Prova il nostro motore di ricerca basato sull’AI</h1>
                     <p class="text-md mx-12 font-serif">
-                        Analizziamo migliaia di sentenze, utilizziando le tecnologie di AI più potenti e moderne.<br>
+                        Analizziamo centinaia di migliaia di sentenze della Corte Suprema di Cassazione, utilizziando le tecnologie di AI più potenti e moderne.<br>
                         Ti forniamo un elenco di documenti rilevanti, e degli spunti di ragionamento.  
                     </p>
                 </div>
@@ -180,8 +196,11 @@
                         <div>
                             <input type="text" bind:value={question} placeholder="La tua ricerca..." class="input input-bordered border-2 border-neutral-300 w-full bg-white text-black font-serif" />
                         </div>
-                        <div>
-                            <div class="grid grid-cols-1 h-full">
+                        <div class="text-center">
+                            <div>
+                                <button class="btn bg-purple-950 text-white font-serif hover:bg-purple-800" on:click={get_documents}>Cerca</button>
+                            </div>
+                            <!--<div class="grid grid-cols-1 h-full">
                                 <div class="col-start-1 flex flex-wrap my-auto">
                                     <p class="ml-1 mr-4 font-serif text-black">Includi le norme</p>
                                     <input type="checkbox" class="toggle border-neutral-300 bg-white [--tglbg:red] checked:[--tglbg:green]"/>
@@ -189,7 +208,7 @@
                                 <div class="col-start-2 text-right">
                                     <button class="btn bg-purple-950 text-white font-serif hover:bg-purple-800" on:click={get_documents}>Cerca</button>
                                 </div>
-                            </div>
+                            </div>-->
                         </div>
                     </div>
                 </div>
@@ -197,6 +216,24 @@
         </div>
     </div>
     <div>
+        {#if error != ""}
+            <div class="m-4">
+                <div role="alert" class="alert alert-error">
+                    <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="h-6 w-6 shrink-0 stroke-current"
+                    fill="none"
+                    viewBox="0 0 24 24">
+                    <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <span>ERORRE: {error}. Riprova. Se l'errore persiste conntattare info@legalia.cloud.</span>
+                </div>
+            </div>
+        {/if}
         {#if analisi}
             {#if reasoningLoading}
                 <ChatDemo chat_history_payload={chat_history} first_msg = '<span class="loading loading-dots loading-md"></span>'/>

@@ -4,21 +4,21 @@
     import { afterUpdate } from 'svelte';
 
     export let chat_history_payload;
-    export let first_msg:String = '';
+    export let first_msg:string = '';
     
-    let user_message:String;
+    let user_message:string;
     let loading:boolean;
     let chat_container;
 
     interface Message {
         sender:number, // 0 = ChatBot | 1 = User 
-        text:String
+        text:string
     };
 
     let history:Message[] = [];
     history[0] = {sender:0, text: first_msg};
 
-    async function chat(message: String){
+    async function chat(message: string){
         loading = true;
         user_message = "";
         history = [...history, {sender:1, text:message}]

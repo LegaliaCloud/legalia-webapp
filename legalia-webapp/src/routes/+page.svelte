@@ -148,7 +148,7 @@
             <h2 class="text-center text-xl mb-6 font-bold">Chi siamo</h2>
             <div class="team-members">
                 <div class="team-member">
-                    <img class="mx-auto mb-6" src="./img/user.png" alt="Team Member 1">
+                    <img class="mx-auto mb-6" src="./img/founder.png" alt="Team Member 1">
                     <h3 class="text-lg font-bold mb-4">Nome Cognome</h3>
                     <p>
                         Pellentesque suscipit ipsum vitae ante iaculis auctor.
@@ -158,7 +158,7 @@
                     </p>
                 </div>
                 <div class="team-member my-6">
-                    <img class="mx-auto mb-6" src="./img/user.png" alt="Team Member 1">
+                    <img class="mx-auto mb-6" src="./img/founder.png" alt="Team Member 1">
                     <h3 class="text-lg font-bold mb-4">Nome Cognome</h3>
                     <p>
                         Pellentesque suscipit ipsum vitae ante iaculis auctor.
@@ -168,7 +168,7 @@
                     </p>
                 </div>
                 <div class="team-member">
-                    <img class="mx-auto mb-6" src="./img/user.png" alt="Team Member 1">
+                    <img class="mx-auto mb-6" src="./img/founder.png" alt="Team Member 1">
                     <h3 class="text-lg font-bold mb-4">Nome Cognome</h3>
                     <p>
                         Pellentesque suscipit ipsum vitae ante iaculis auctor.
