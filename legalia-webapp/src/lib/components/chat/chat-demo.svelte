@@ -75,7 +75,7 @@
               <input type="text" bind:value={user_message} placeholder="Type here" class="input input-md input-bordered w-full bg-white text-black" />
           </div>
           <div class="md:col-span-1 col-span-2">
-              <button on:click={chat(user_message)} class="btn w-full bg-green-200 text-black hover:bg-green-400 text-xs">Invia</button>
+              <button on:click={chat(user_message)} class="btn w-full bg-green-500 text-white hover:bg-green-400 text-xs">Invia</button>
           </div>     
         </div>
     </div>

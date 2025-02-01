@@ -37,8 +37,10 @@
 	},
 	"type": "module",
 	"dependencies": {
+		"@tsparticles/svelte": "^3.1.1",
 		"autoprefixer": "^10.4.20",
 		"marked": "^15.0.6",
-		"postcss": "^8.4.47"
+		"postcss": "^8.4.47",
+		"tsparticles": "^3.8.0"
 	}
 }
