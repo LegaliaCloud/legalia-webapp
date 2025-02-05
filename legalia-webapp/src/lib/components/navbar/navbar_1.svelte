@@ -1,7 +1,7 @@
 <script>
   import { page } from '$app/stores';
 </script>
-<div class="navbar bg-purple-950 text-white py-6">
+<div class="navbar text-white py-6 relative z-30 font-roboto">
     <div class="navbar-start">
       <div class="dropdown">
         <div tabindex="0" role="button" class="btn btn-ghost lg:hidden">
@@ -19,7 +19,7 @@
           </svg>
         </div>
         <!-- svelte-ignore a11y-no-noninteractive-tabindex -->
-        <ul tabindex="0" class="menu menu-sm dropdown-content bg-purple-950 rounded-box z-[1] mt-3 w-52 p-2 shadow">
+        <ul tabindex="0" class="menu menu-sm dropdown-content bg-purple-950 rounded-box mt-3 w-52 p-2 shadow">
           {#if $page.url.pathname === '/search'}
             <li><a href="/">Home</a></li>
             <li><a href="/">Altro</a></li>
@@ -29,16 +29,16 @@
           {/if}
         </ul>
       </div>
-      <h1 class="text-xl ml-8 font-serif font-bold">LegalIA</h1>
+      <h1 class="text-xl ml-8 font-bold">LegalIA</h1>
     </div>
     <div class="navbar-end hidden lg:flex">
       <ul class="menu menu-horizontal px-1">
         {#if $page.url.pathname === '/search'}
-            <li class="font-serif font-bold mx-2"><a href="/">Home</a></li>
-            <li class="font-serif font-bold mx-2"><a href="/">Altro</a></li>
+            <li class="font-bold mx-2"><a href="/">Home</a></li>
+            <li class="font-bold mx-2"><a href="/">Altro</a></li>
         {:else}
-            <li><a class="font-serif font-bold mx-2" href="#chi-siamo">Chi siamo</a></li>
-            <li><a class="font-serif font-bold mx-2" href="#demo">Demo</a></li>
+            <li><a class="font-bold mx-2" href="#chi-siamo">Chi siamo</a></li>
+            <li><a class="font-bold mx-2" href="#demo">Demo</a></li>
         {/if}  
       </ul>
     </div>

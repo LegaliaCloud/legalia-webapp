@@ -1,8 +1,5 @@
-.my_hero {
-    background: linear-gradient(to top left, #ffffff 0%, #ffffff 50%, #3b0764 50%, #3b0764 100%);
-    color: white;
-}
 .hero-content {
+    height: 95vh;
     flex-wrap: wrap;
     display: flex;
     justify-content: space-between;
@@ -12,7 +9,6 @@
     flex: 1;
 }
 .hero-text {
-    margin-right: 100px;
     min-width: 150px;
 }
 .my-stats {
@@ -46,10 +42,7 @@
     flex-wrap: wrap;
     justify-content: space-around;
 }
-.team-member {
-    max-width: 300px;
-    text-align: center;
-}
+
 .team-member img {
     width: 100px;
     height: 100px;
@@ -152,6 +145,13 @@
     color: #3b0764; /* Indaco */
     align-self: flex-start;
 }
+
+@media only screen and (max-width: 700px) {
+    .hero-container {
+      height: 1300px;
+    }
+}
+
 @keyframes fadeIn {
     from { opacity: 0; transform: translateY(10px); }
     to { opacity: 1; transform: translateY(0); }

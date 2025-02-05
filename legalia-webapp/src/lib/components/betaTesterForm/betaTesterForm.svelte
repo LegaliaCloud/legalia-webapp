@@ -3,33 +3,49 @@
         nome: '',
         cognome: '',
         email: '',
-        professione: ''
+        professione: '',
+        ordine: "Non sono iscritto all'ordine"
     };
 
-    async function handleSubmit() {
-        try {
-            const response = await fetch('/api/salva-dati', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(formData)
-            });
+    let lista_ordini = ['ACQUI TERME', 'AGRIGENTO', 'ALBA', 'ALESSANDRIA', 'ANCONA', 'AOSTA', 'AREZZO', 'ARIANO IRPINO', 'ASCOLI PICENO', 'ASTI', 'AVELLINO', 'AVEZZANO', 'BARCELLONA POZZO DI GOTTO', 'BARI', 'BASSANO DEL GRAPPA', 'BELLUNO', 'BENEVENTO', 'BERGAMO', 'BIELLA', 'BOLOGNA', 'BOLZANO', 'BRESCIA', 'BRINDISI', 'BUSTO ARSIZIO', 'CAGLIARI', 'CALTAGIRONE', 'CALTANISSETTA', 'CAMERINO', 'CAMPOBASSO', 'CASALE MONFERRATO', 'CASSINO', 'CASTROVILLARI', 'CATANIA', 'CATANZARO', 'CHIAVARI', 'CHIETI', 'CIVITAVECCHIA', 'COMO', 'COSENZA', 'CREMA', 'CREMONA', 'CROTONE', 'CUNEO', 'ENNA', 'FERMO', 'FERRARA', 'FIRENZE', 'FOGGIA', "FORLI'", 'FROSINONE', 'GELA', 'GENOVA', 'GORIZIA', 'GROSSETO', 'IMPERIA', 'ISERNIA', 'IVREA', "L'AQUILA", 'LA SPEZIA', 'LAGONEGRO', 'LAMEZIA TERME', 'LANCIANO', 'LANUSEI', 'LARINO', 'LATINA', 'LECCE', 'LECCO', 'LIVORNO', 'LOCRI', 'LODI', 'LUCCA', 'LUCERA', 'MACERATA', 'MANTOVA', 'MARSALA', 'MASSACARRARA', 'MATERA', 'MELFI', 'MESSINA', 'MILANO', 'MISTRETTA', 'MODENA', 'MODICA', "MONDOVI'", 'MONTEPULCIANO', 'MONZA', 'NAPOLI', 'NAPOLI NORD', 'NICOSIA', 'NOCERA INFERIORE', 'NOLA', 'NOVARA', 'NUORO', 'ORISTANO', 'ORVIETO', 'PADOVA', 'PALERMO', 'PALMI', 'PAOLA', 'PARMA', 'PATTI', 'PAVIA', 'PERUGIA', 'PESARO', 'PESCARA', 'PIACENZA', 'PINEROLO', 'PISA', 'PISTOIA', 'PORDENONE', 'POTENZA', 'PRATO', 'RAGUSA', 'RAVENNA', 'REGGIO CALABRIA', 'REGGIO EMILIA', 'RIETI', 'RIMINI', 'ROMA', 'ROSSANO', 'ROVERETO', 'ROVIGO', 'S. ANGELO DEI LOMBARDI', 'SALA CONSILINA', 'SALERNO', 'SALUZZO', 'SANREMO', 'SANTA MARIA CAPUA VETERE', 'SASSARI', 'SAVONA', 'SCIACCA', 'SIENA', 'SIRACUSA', 'SONDRIO', 'SPOLETO', 'SULMONA', 'TARANTO', 'TEMPIO PAUSANIA', 'TERAMO', 'TERMINI IMERESE', 'TERNI', 'TIVOLI', 'TOLMEZZO', 'TORINO', 'TORRE ANNUNZIATA', 'TORTONA', 'TRANI', 'TRAPANI', 'TRENTO', 'TREVISO', 'TRIESTE', 'UDINE', 'URBINO', 'VALLO DELLA LUCANIA', 'VARESE', 'VASTO', 'VELLETRI', 'VENEZIA', 'VERBANIA', 'VERCELLI', 'VERONA', 'VIBO VALENTIA', 'VICENZA', 'VIGEVANO', 'VITERBO', 'VOGHERA'];
 
-            if (response.ok) {
-                alert('Dati salvati con successo!');
-            } else {
-                alert('Errore nel salvataggio' + response.status);
+    async function handleSubmit() {
+        let values = Object.values(formData);
+        let correctData = true;
+        for (let value of values){
+            if(value == ''){
+                correctData = false;
+                break;
             }
-        } catch (error) {
-            console.error('Errore:', error);
+        }  
+        if(correctData){
+            try {
+                const response = await fetch('/api/salva-dati', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                if (response.ok) {
+                    alert('Dati inviati con successo! Ti contatteremo.');
+                } else {
+                    alert("Errore nell'invio dei dati: " + response.status);
+                }
+            } catch (error) {
+                console.error('Errore:', error);
+                alert("Errore nell'invio dei dati: " + error);
+            }
+        } else {
+            alert("Compilare tutti i campi richiesti!");
         }
     }
 </script>
 
 <button class="btn bg-purple-950 text-white mt-4" onclick="my_modal_3.showModal()">Diventa beta tester</button>
 <dialog id="my_modal_3" class="modal">
-  <div class="modal-box bg-white">
+  <div class="modal-box bg-white text-black">
     <form method="dialog">
       <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
     </form>
@@ -50,6 +66,15 @@
         <label class="input input-bordered flex items-center gap-2 bg-neutral-200 my-2">
             Professione
             <input bind:value={formData.professione} type="text" class="grow bg-neutral-200" placeholder="Avvocato" required/>
+        </label>
+        <label class="input input-bordered flex items-center gap-2 bg-neutral-200 my-2">
+            Ordine
+            <select class="bg-neutral-200 w-full" name="Ordine" bind:value={formData.ordine}>
+                <option value="Non sono iscritto all'ordine" selected>Non sono iscritto all'ordine</option>
+                {#each lista_ordini as ordine}
+                        <option value="{ordine}">{ordine}</option>
+                {/each}
+            </select>
         </label>
         <input type="submit" class="btn bg-purple-950 text-white mt-4">
     </form>
