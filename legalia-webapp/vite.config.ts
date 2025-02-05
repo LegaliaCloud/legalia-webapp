@@ -12,6 +12,6 @@ export default defineConfig({
 	server: {
 		host: '0.0.0.0',
 		port: port,
-		allowedHosts: ["legalia.cloud"]
+		allowedHosts: ["legalia.cloud", "www.legalia.cloud"]
 	}
 });
