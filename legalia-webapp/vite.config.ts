@@ -2,7 +2,7 @@ import { sveltekit } from '@sveltejs/kit/vite';
 import { defineConfig } from 'vitest/config';
 
 const isProduction = process.env.NODE_ENV === 'prod';
-const port = isProduction ? 80 : 8080;
+const port = isProduction ? 80 : 8000;
 
 export default defineConfig({
 	plugins: [sveltekit()],
