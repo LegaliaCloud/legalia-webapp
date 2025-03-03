@@ -1,18 +1,22 @@
-<script>
+<script lang="ts">
+    import Fileicon from "../misc/fileicon.svelte";
+	//import Foldericon from "../misc/foldericon.svelte";
+    import { onMount } from "svelte";
+    import {files, get_files} from "./filesFunction.svelte";
+    $: filesList = $files;
 
-	import Fileicon from "../misc/fileicon.svelte";
-	import Foldericon from "../misc/foldericon.svelte";
-
+    onMount(get_files);
 </script>
-<div class="flex-1 flex flex-col pl-5">
+
+<div class="flex-1 flex flex-col pl-5" style="min-height: 50%;">
     <ul class="menu menu-xs rounded-lg w-full max-w-xs text-xl">
     <li class="menu-title text-xl text-purple-100 mb-5">I tuoi file</li>
-    <li>
-        <a href="/">
-        <Fileicon></Fileicon>
-        resume.pdf
-        </a>
-    </li>
+    
+    {#each filesList as file}
+        <!-- svelte-ignore a11y-missing-attribute -->
+        <li><a><Fileicon></Fileicon>{file.name}</a></li>
+    {/each}
+    <!--
     <li>
         <details open>
         <summary>
@@ -78,6 +82,6 @@
         <Fileicon></Fileicon>
         reports-final-2.pdf
         </a>
-    </li>
+    </li>-->
     </ul>
 </div>

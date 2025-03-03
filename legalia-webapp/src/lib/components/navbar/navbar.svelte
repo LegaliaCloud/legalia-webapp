@@ -1,55 +1,31 @@
 <script lang="ts">
-    import { page } from '$app/stores';
-    
-    
+    import { page } from '$app/stores';   
     // You might want to make this dynamic based on your auth system
     const userImageUrl = 'https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp';
   </script>
   
-  <nav class="navbar bg-white">
-    <div class="flex-1 ml-10">
-      <a href="/" class="font-bold text-purple-900 text-2xl">LegalIA</a>
+  <div class="navbar bg-white px-10">
+    <div class="navbar-start">
+      <a href="./app" class="text-purple-950 font-bold text-xl">LegalIA</a>
     </div>
-    
-    <div class="flex-none gap-4 mr-24">
-      <div class="hidden md:flex text-gray-800">
-        <ul class="menu menu-horizontal px-1 text-lg mr-7">
-          <li>
-            <a 
-              href="/app" 
-              class="hover:text-purple-600 {$page.url.pathname === '/app' ? 'text-purple-600' : ''}"
-            >
-              Chatbot
-            </a>
-          </li>
-          <li>
-            <a 
-              href="app/search" 
-              class="hover:text-purple-600 {$page.url.pathname === 'app/search' ? 'text-purple-600' : ''}"
-            >
-              Ricerca
-            </a>
-          </li>
-        </ul>
-      </div>
-      
+    <div class="navbar-end">
+      <ul class="menu menu-horizontal px-1 mr-4">
+        <li><a class="font-bold text-purple-800 mx-2" href="./app">Chatbot</a></li>
+        <li><a class="font-bold text-purple-800 mx-2" href="./search">Ricerca</a></li>
+      </ul>
       <div class="dropdown dropdown-end">
-        <div tabindex="0" role="button" class="btn btn-ghost btn-circle avatar w-16">
-          <div class="ring-primary ring-offset-base-100 w-24 rounded-full ring ring-offset-[0.3px]">
-            <img alt="User avatar" src={userImageUrl} />
+        <div tabindex="0" role="button" class="btn btn-ghost btn-circle avatar">
+          <div class="w-10 border-purple-950 border-1 rounded-full">
+            <img
+              alt="Tailwind CSS Navbar component"
+              src={userImageUrl} />
           </div>
         </div>
-        <ul class="dropdown-content menu bg-white rounded-box z-[1] w-52 p-2 shadow mt-2 items-center translate-x-14 text-l text-slate-900">
-          <li><a class="hover:bg-purple-950 hover:text-white" href="/plan">Il tuo abbonamento</a></li>
-          <li><a class="hover:bg-purple-950 hover:text-white" href="/account">Il tuo account</a></li>
-          <li class="mt-5">
-            <button 
-              class="btn btn-error btn-sm text-white w-full"
-            >
-              Logout
-            </button>
-          </li>
+        <ul class="menu menu-sm dropdown-content bg-white text-black rounded-box z-[1] mt-3 w-52 p-2 shadow">
+          <li><a href="./account" class="mx-auto">Profile</a></li>
+          <li><a href="./plan" class="mx-auto">Plan</a></li>
+          <li><button class="btn btn-sm mx-4 btn-error">Logout</button></li>
         </ul>
       </div>
     </div>
-  </nav>
+  </div>

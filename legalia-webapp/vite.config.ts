@@ -8,35 +8,62 @@ export default defineConfig({
 	},
 	server: {
 		proxy: {
-		  '/document': {
+		  '/search/document': {
 			target: 'http://localhost:8000',
-			changeOrigin: true,
-			rewrite: (path) => path.replace(/^\/document/, '/document'),
+			changeOrigin: true
 		  },
-		  '/documents': {
+		  '/search/sentenze/documents': {
         	target: 'http://localhost:8000',
-     		changeOrigin: true,
-        	rewrite: (path) => path.replace(/^\/documents/, '/documents'),
+     		changeOrigin: true
       		},
-			'/reranker': {
+			'/search/sentenze/reranker': {
         	target: 'http://localhost:8000',
-     		changeOrigin: true,
-        	rewrite: (path) => path.replace(/^\/reranker/, '/reranker'),
+     		changeOrigin: true
       		},
-			'/reasoning': {
+			'/search/sentenze/analysis': {
         	target: 'http://localhost:8000',
-     		changeOrigin: true,
-        	rewrite: (path) => path.replace(/^\/reasoning/, '/reasoning'),
+     		changeOrigin: true
       		},
-			'/analysis': {
-        	target: 'http://localhost:8000',
-     		changeOrigin: true,
-        	rewrite: (path) => path.replace(/^\/analysis/, '/analysis'),
-      		},
-			'/chat': {
+			'search/chat': {
         	target: 'http://localhost:8000',
      		changeOrigin: true,
         	rewrite: (path) => path.replace(/^\/chat/, '/chat'),
+      		},
+			'/chat/create/': {
+        	target: 'http://localhost:8000',
+     		changeOrigin: true,
+      		},
+			'/chat/complete': {
+        	target: 'http://localhost:8000',
+     		changeOrigin: true,
+      		},
+			'/chat/all': {
+        	target: 'http://localhost:8000',
+     		changeOrigin: true,
+      		},
+			'/chat/get/': {
+        	target: 'http://localhost:8000',
+     		changeOrigin: true,
+      		},
+			'/project/': {
+        	target: 'http://localhost:8000',
+     		changeOrigin: true,
+      		},
+			'/project/add': {
+        	target: 'http://localhost:8000',
+     		changeOrigin: true,
+      		},
+			'/project/toggle/': {
+        	target: 'http://localhost:8000',
+     		changeOrigin: true,
+      		},
+			'/files/all': {
+        	target: 'http://localhost:8000',
+     		changeOrigin: true,
+      		},
+			'/files/upload': {
+        	target: 'http://localhost:8000',
+     		changeOrigin: true,
       		}
 		}
 	}

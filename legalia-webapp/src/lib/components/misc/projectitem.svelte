@@ -1,8 +1,22 @@
 <script lang="ts">
 	import Dotsicon from "./dotsicon.svelte";
 
+    export let id:number;
     export let projectname: string;
-    export let active: boolean
+    export let active: boolean;
+
+    async function project_toggle(project_id:number){
+      try{
+        const response = await fetch(`/project/toggle/${project_id}`);
+        if(!response.ok){
+        let error = `Errore HTTP: ${response.status}`;
+        throw new Error(error);
+      }
+      window.location.reload();
+      }catch(err){
+        console.log(err);
+      }
+    }
   </script>
   
   <div
@@ -14,31 +28,16 @@
         {projectname}
       </p>
     </div>  
-    <div class="dropdown dropdown-end dropdown-hover pr-2 pt-1">
+    <div class="dropdown dropdown-end dropdown-active pr-2 pt-1">
         <div tabindex="0" role="button" class="btn btn-ghost btn-xs h-full hover:no-animation hover:bg-transparent" style="padding: 0">
           <Dotsicon />
         </div>
-        <ul class="dropdown-content z-[1] menu shadow bg-purple-200 rounded-box w-44">
+        <ul class="dropdown-content menu shadow bg-purple-200 rounded-box w-44 z-[2]">
           <li><a class="text-purple-950 hover:text-purple-100 hover:bg-purple-800">Rinomina progetto</a></li>
-          <li><a class="text-purple-950 hover:text-purple-100  hover:bg-purple-800"> {active ? 'Disattiva progetto': 'Attiva progetto'}</a></li>
-          <li><button class="btn btn-error text-center align-middle" onclick="confirm_delete_modal.showModal()">Elimina progetto</button>
-        </li>
+          {#if !active}
+            <li><button on:click={project_toggle(id)} class="text-purple-950 hover:text-purple-100  hover:bg-purple-800">Attiva progetto</button></li>
+          {/if}
+          <li><button class="btn btn-error text-center align-middle">Elimina progetto</button></li>
         </ul>
-
-        <dialog id="confirm_delete_modal" class="modal">
-            <div class="modal-box  bg-purple-300 text-black">
-              <form method="dialog">
-                    <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
-              </form>
-              <h3 class="text-lg font-bold">Eliminazione del porgetto</h3>
-              <p class="py-4">Sicuro di voler eliminare il progetto. Questa operazione è irriversibile</p>
-              <form method="dialog">
-                <button class="btn btn-error">Conferma</button>
-              </form>
-            </div>
-            <form method="dialog" class="modal-backdrop">
-              <button>Annulla</button>
-            </form>
-        </dialog>
       </div>
   </div>

@@ -11,7 +11,7 @@
         {id: 1,title: "Proprietà privata", date: "09/11/2024", emettitore: "TAR"}
     ]
 </script>
-<div class="bg-purple-950 h-full w-full rounded-l-xl position-items-center p-6">
+<div class="bg-purple-950 h-full w-full rounded-l-xl position-items-center p-6" style=" background: linear-gradient(170deg, #3b0764 30%, #712da4);">
     <div class="text-center mb-4">
         <p class="text-xl font-bold text-white">Risultati ricerca</p>
     </div>

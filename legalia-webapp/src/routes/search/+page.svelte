@@ -40,39 +40,6 @@
         }
     });
 
-    /*
-    async function reasoning(id: number){
-        analisi = true;
-        reasoningLoading = true;
-        reasoning_text = "";
-        let reasoningResponse;
-        let ids=[id];
-        let payload = {"document_ids": ids};
-        try {
-            const response = await fetch(`/reasoning?question=${question}`,
-            {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify(payload)
-            });
-            if (!response.ok) {
-                throw new Error(`Errore HTTP: ${response.status}`);
-            }
-            responseData = await response.json();
-            reasoningResponse = responseData.reasoning;
-            reasoningResponse.informazioni_utili.forEach(info => {
-                reasoning_text += info.informazione + '<br>';
-            });
-            reasoning_text += "<br><b>RAGIONAMENTO</b><br>" + reasoningResponse.ragionamento +'<br>';
-            reasoning_text += "<br><b>POSSIBILI ATTENUANTI</b><br>" + reasoningResponse.possibili_attenuanti +'<br>';
-            reasoning_text += "<br><b>POSSIBILI AGGRAVANTI</b><br>" + reasoningResponse.possibili_aggravanti;  
-        } catch (err) {
-            error = err.message;
-        } finally {
-            reasoningLoading = false;
-        }
-    }*/
-
     async function analysis(id: number){
         error = "";
         analisi = true;
@@ -82,7 +49,7 @@
         let ids=[id];
         let payload = {"document_ids": ids};
         try {
-            const response = await fetch(`/analysis`,
+            const response = await fetch(`search/sentenze/analysis`,
             {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
@@ -95,7 +62,10 @@
             analysisResponse = responseData.analysis;
             analysis_text = '<h3 class="text-lg font-bold mb-2">' + documents[id].title + '</h3>';
             analysis_text += "<b>PAROLE CHIAVE</b><br>";
-            let keywords:string[] = analysisResponse.keywords.split(', ');
+            let keywords:string[] = analysisResponse.keywords.split(',');
+            for(let i = 0; i<keywords.length; i++){
+                keywords[i] = keywords[i].replace(/[{}"]/g, '');
+            }
             analysis_text += '<div class="flex flex-wrap">'
             keywords.forEach(key => {
                 analysis_text += '<div class="bg-warning m-2 py-2 px-4 text-black rounded-box font-semibold uppercase shadow-xl">' + key + '</div>'
@@ -117,7 +87,7 @@
         rerankLoading = true;
         let payload = {"document_ids": doc_IDs};
         try {
-            const response = await fetch(`/reranker?question=${question}&k=5`,
+            const response = await fetch(`/search/sentenze/reranker?question=${question}&k=5`,
             {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
@@ -140,7 +110,7 @@
 
     async function get_document_info(document_id: number){
         try {
-            const response = await fetch(`/document/${document_id}`);
+            const response = await fetch(`/search/document/${document_id}`);
             if (!response.ok) {
                 return {
                     ok: false,
@@ -168,7 +138,7 @@
         GetDocsLoading = true;
         analisi = false;
         try {
-            const response = await fetch(`/documents?question=${question}&k=15`);
+            const response = await fetch(`/search/sentenze/documents?question=${question}&k=15`);
             if (!response.ok) {
                 error = `Errore HTTP: ${response.status}`;
                 throw new Error(error);
@@ -182,7 +152,10 @@
                 let docInfo = await get_document_info(id);
                 if(docInfo.ok){
                     let text = docInfo.description.split('\n');
-                    let keywords_list = docInfo.keywords.split(', ');
+                    let keywords_list = docInfo.keywords.split(',');
+                    for(let i = 0; i<keywords_list.length; i++){
+                        keywords_list[i] = keywords_list[i].replace(/[{}"]/g, '');
+                    }
                     documents[id] = {title: text[0], massima: docInfo.massima, keywords: keywords_list, url: docInfo.url};
                 } else {
                     documents[id] = {title: 'ERRORE', massima: 'Errore nell\'ottenimento delle informazioni di questo documento',keywords: '', url: ''}
