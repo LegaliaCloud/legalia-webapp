@@ -1,50 +1,16 @@
 <script lang="ts">
 	import Fileexplorer from "../fileexplorer/fileexplorer.svelte";
-	import Projectitem from "../misc/projectitem.svelte";
+	import Projectitem from "../projects/projectitem.svelte";
   import { onMount } from "svelte";
   import { get_files } from "../fileexplorer/filesFunction.svelte";
-
-  interface Project{
-    id:number,
-    name:string,
-    description:string,
-    client:any,
-    state:string,
-    sentenze:[],
-    norme:[],
-    chats:[]
-  }
-
-  let projects:Project[] = [];
-
+  import { projects, get_projects} from "../projects/projectsModule.svelte";
+  
+  $: projects_list = $projects;
   let newProjectName = "", newProjectClient = "", newProjectDesc = "";
   let create_project_form;
 
   let newFile;
   let uploadModal;
-
-  async function get_projects(){
-    try{
-      const response = await fetch('/project/');
-      if(!response.ok){
-        let error = `Errore HTTP: ${response.status}`;
-        throw new Error(error);
-      }
-      projects = await response.json();
-      for(let i=0; i<projects.length;i++){
-        if(projects[i].state=="active"){
-          if(i != 0){
-            let temp = projects[i];
-            projects[i] = projects[0];
-            projects[0] = temp;
-          }
-          break;
-        }
-      }
-    }catch(err){
-      console.log(err);
-    }
-  }
 
   async function create_project(name:string, desc:string, client:string){
     if(name != ""){
@@ -111,7 +77,7 @@
   <div class="flex-1 flex flex-col px-5 overflow-y-auto" style="min-height: 40%; max-height: 40%; max-width:100%;">
     <ul class="menu w-full mb-2">
       <li class="menu-title text-xl text-purple-100 w-full">I tuoi progetti</li>
-      {#each projects as project}
+      {#each projects_list as project}
         <li class="my-1"><Projectitem id={project.id} projectname={project.name} active={project.state == "active"}/></li>
       {/each}
     </ul>
