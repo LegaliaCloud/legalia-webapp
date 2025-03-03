@@ -40,6 +40,32 @@
         }
     });
 
+    async function add_project(id: number){
+        error = "";
+        try {
+            // Send a direct array of IDs, not an object containing an array
+            let payload = [id];
+            const response = await fetch(`/project/add/sentenze`,
+            {
+                method: 'PUT',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(payload)
+            });
+            
+            if (!response.ok) {
+                error = `Errore HTTP: ${response.status}`;
+                throw new Error(error);
+            }
+            
+            // Show confirmation message to user
+            alert("Documento aggiunto al progetto attivo con successo!");
+            
+        } catch (err) {
+            error = err.message;
+            alert("Errore nell'aggiungere il documento al progetto: " + error);
+        }
+    }
+
     async function analysis(id: number){
         error = "";
         analisi = true;
@@ -273,6 +299,7 @@
                                 <div class="card-actions justify-end flex">
                                     <a href={documents[id].url} target="_blank" class="btn btn-sm bg-purple-950 text-white font-roboto hover:bg-purple-800">Vedi</a>
                                     <button class="btn btn-sm bg-purple-950 text-white font-roboto hover:bg-purple-800" on:click={analysis(id)}>Chiedi a LegalIA</button>
+                                    <button class="btn btn-sm bg-purple-950 text-white font-roboto hover:bg-purple-800" on:click={add_project(id)}>Aggiungi a progetto</button>
                                 </div>
                             </div>
                         </div>
