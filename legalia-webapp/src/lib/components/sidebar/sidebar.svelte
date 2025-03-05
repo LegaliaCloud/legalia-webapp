@@ -2,7 +2,7 @@
 	import Fileexplorer from "../fileexplorer/fileexplorer.svelte";
 	import Projectitem from "../projects/projectitem.svelte";
   import { onMount } from "svelte";
-  import { get_files } from "../fileexplorer/filesFunction.svelte";
+  import { get_files } from "../fileexplorer/filesModule.svelte";
   import { projects, get_projects} from "../projects/projectsModule.svelte";
   
   $: projects_list = $projects;

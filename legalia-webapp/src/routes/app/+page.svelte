@@ -3,7 +3,7 @@
 	import Navbar from '$lib/components/navbar/navbar.svelte';
 	import Sidebar from '$lib/components/sidebar/sidebar.svelte';
     import Chat from '$lib/components/chat/chat.svelte';
-	import ResearchResults from '$lib/components/research/research_results.svelte';
+	import ResearchResults from '$lib/components/researchResult/research_results.svelte';
   </script>
   
   <div class="min-h-screen bg-white">

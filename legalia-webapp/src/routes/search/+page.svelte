@@ -4,9 +4,17 @@
     import Fileicon from '$lib/components/misc/fileicon-lg.svelte';
     import ChatDemo from '$lib/components/chat/chat-demo.svelte';
     import { onMount} from "svelte";
+    import type { Norma } from "$lib/components/researchResult/researchModule.svelte";
+    import { decode_codici } from "$lib/components/researchResult/researchModule.svelte";
     import Hero from '$lib/components/hero/hero.svelte';
 
-    let question: string;
+    let question: string = "";
+    let lookFor: boolean; //false = sentenze | true = norme
+
+    let codice:string;
+    let art:string = "";
+    let normeResults:Norma[] = [];
+
     let analisi: boolean = false;
     let reasoningLoading: boolean= false;
     let rerankLoading: boolean = false;
@@ -20,6 +28,7 @@
     let chat_history;
     let responseData = null;
     let error:string = "";
+
 
     /*
     Funzione per spostare automatica all'inizio della sezione risultati quando in
@@ -40,12 +49,19 @@
         }
     });
 
-    async function add_project(id: number){
+    async function add_project(doc_type: number,id: number){
+        //doc_type 0 = norma, 1 = sentenza
         error = "";
+        let addToProjectAPI:string = '';
+        if(doc_type == 0){
+            addToProjectAPI = '/project/add/norme';
+        } else if (doc_type == 1){
+            addToProjectAPI = '/project/add/sentenze';
+        }
         try {
             // Send a direct array of IDs, not an object containing an array
             let payload = [id];
-            const response = await fetch(`/project/add/sentenze`,
+            const response = await fetch(addToProjectAPI,
             {
                 method: 'PUT',
                 headers: {'Content-Type': 'application/json'},
@@ -63,6 +79,41 @@
         } catch (err) {
             error = err.message;
             alert("Errore nell'aggiungere il documento al progetto: " + error);
+        }
+    }
+
+    async function search_norme(){
+        doc_IDs = [];
+        error = "";
+        analisi = false;
+        GetDocsLoading = true;
+        let payload = {
+            query: question,
+            articolo: art,
+            codice: [""],
+            top_k: "10"
+        }
+        if(codice != "all"){
+            payload.codice = [codice];
+        } else {
+            payload.codice = ["cp", "cc", "cpc", "cpp"];
+        }
+        try{
+            const response = await fetch(`search/norme/`,
+            {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(payload)
+            });
+            console.log(payload);
+            if (!response.ok) {
+                throw new Error(`Errore HTTP: ${response.status}`);          
+            }
+            normeResults = await response.json();
+        }catch(err){
+            error = err.message;
+        } finally {
+            GetDocsLoading = false;
         }
     }
 
@@ -163,6 +214,7 @@
         error = "";
         GetDocsLoading = true;
         analisi = false;
+        normeResults = [];
         try {
             const response = await fetch(`/search/sentenze/documents?question=${question}&k=15`);
             if (!response.ok) {
@@ -204,7 +256,7 @@
         <Hero />
         <!--Contnent-->
         <div class="relative z-20 w-full">
-            <div class="absolute top-0 left-0 w-full">
+            <div class="absolute top-0 left-0 w-full h-full">
                 <div>
                     <div class="text-balance py-4 text-white">
                         <h1 class="md:text-2xl text-xl mx-12 font-roboto font-bold my-4">Prova il nostro motore di ricerca basato sull’AI</h1>
@@ -214,23 +266,49 @@
                         </p>
                     </div>
                     <div class="rounded-lg border-4 border-purple-950 bg-white md:p-6 py-6 px-2 my-12 md:mx-12 sm:mx-4 mx-1 shadow-inner shadow-2xl">
-                        <div class="grid grid-rows-2 gap-3">
+                        <div class="grid grid-rows-{lookFor? '4': '2'} gap-{lookFor? '1': '3'}">
                             <div>
-                                <input type="text" bind:value={question} placeholder="La tua ricerca..." class="input input-bordered border-2 border-neutral-300 w-full bg-white text-black font-roboto" />
+                                <input id="semantic" type="text" bind:value={question} placeholder="La tua ricerca..." class="input input-bordered border-2 border-neutral-300 w-full bg-white text-black font-roboto" />
                             </div>
-                            <div class="text-center">
-                                <div>
-                                    <button class="btn bg-purple-950 text-white font-roboto hover:bg-purple-800" on:click={get_documents}>Cerca</button>
+                            {#if lookFor}
+                            <div class="divider">Oppure</div>
+                            <div>
+                                <p class="mb-2 ml-1 text-black">Ricerca una norma specifica</p>
+                                <div class="flex gap-2">
+                                    <select bind:value={codice} on:change={console.log(codice)} class="select border-neutral-300 border-2 bg-white font-roboto">
+                                        <option value="all"disabled selected>Codice</option>
+                                        <option value="cp">Codice Penale</option>
+                                        <option value="cc">Codice Civile</option>
+                                        <option value="cpp">Codice Procedura Penale</option>
+                                        <option value="cpc">Codice Procedura Civile</option>
+                                        <option value="all">Tutti</option>
+                                    </select>
+                                    <div>
+                                        <input type="text" bind:value={art} placeholder="num. Articolo" class="input input-bordered border-2 border-neutral-300 w-full bg-white text-black font-roboto" />
+                                    </div>
                                 </div>
-                                <!--<div class="grid grid-cols-1 h-full">
-                                    <div class="col-start-1 flex flex-wrap my-auto">
-                                        <p class="ml-1 mr-4 font-roboto text-black">Includi le norme</p>
-                                        <input type="checkbox" class="toggle border-neutral-300 bg-white [--tglbg:red] checked:[--tglbg:green]"/>
+                            </div>
+                            {/if}
+                            <div>
+                                <div class="grid grid-cols-1 h-full">
+                                    <div class="col-start-1 ml-1 flex flex-wrap my-auto">
+                                        <div class="flex">
+                                            <p class="text-black mr-2">Stai cercando le</p>
+                                            <label class="swap"> 
+                                                <input bind:checked={lookFor} on:change={codice = "all"} type="checkbox" />
+                                                    <div class="swap-on bg-green-400 rounded text-center text-white font-bold px-2">Norme</div>
+                                                    <div class="swap-off bg-secondary rounded text-center text-white font-bold px-2">Sentenze</div>
+                                            </label>
+                                        </div>
                                     </div>
-                                    <div class="col-start-2 text-right">
-                                        <button class="btn bg-purple-950 text-white font-roboto hover:bg-purple-800" on:click={get_documents}>Cerca</button>
+                                    <div class="col-start-2 text-right my-auto">
+                                        {#if lookFor}
+                                            <button class="btn bg-purple-950 text-white font-roboto hover:bg-purple-800" on:click={search_norme}>Cerca</button>
+                                        {:else}
+                                            <button class="btn bg-purple-950 text-white font-roboto hover:bg-purple-800" on:click={get_documents}>Cerca</button>
+                                        {/if}
                                     </div>
-                                </div>-->
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -261,7 +339,7 @@
         {:else} 
             {#if doc_IDs.length > 0}
                 <div class="w-full md:pl-14 sm:pl-4 pl-1  mt-4">
-                    <h1 class="text-xl font-roboto font-bold text-black">Risultati Ricerca</h1>
+                    <h1 class="text-xl font-roboto font-bold text-black">Risultati Ricerca Sentenze</h1>
                 </div>
                 <div class="md:px-14 px-1 my-6">
                     <div role="alert" class="alert bg-purple-950 text-white shadow-lg">
@@ -299,7 +377,32 @@
                                 <div class="card-actions justify-end flex">
                                     <a href={documents[id].url} target="_blank" class="btn btn-sm bg-purple-950 text-white font-roboto hover:bg-purple-800">Vedi</a>
                                     <button class="btn btn-sm bg-purple-950 text-white font-roboto hover:bg-purple-800" on:click={analysis(id)}>Chiedi a LegalIA</button>
-                                    <button class="btn btn-sm bg-purple-950 text-white font-roboto hover:bg-purple-800" on:click={add_project(id)}>Aggiungi a progetto</button>
+                                    <button class="btn btn-sm bg-purple-950 text-white font-roboto hover:bg-purple-800" on:click={add_project(1, id)}>Aggiungi a progetto</button>
+                                </div>
+                            </div>
+                        </div>
+                    {/each}
+                </div>
+            {/if}
+            {#if normeResults.length > 0}
+                <div class="w-full md:pl-14 sm:pl-4 pl-1  mt-4">
+                    <h1 class="text-xl font-roboto font-bold text-black">Risultati Ricerca Norme</h1>
+                </div>
+                <div class="px-1"> <!--<div class="flex flex-wrap pb-4 px-1">-->
+                    {#each normeResults as norma}
+                        <div class="card card-side bg-white shadow-xl my-2 md:mx-14 mx-1 flex-wrap"> <!--<div class="card card-side bg-white shadow-xl my-2 mx-auto max-w-96">-->
+                            <figure class="text-purple-950 mx-auto my-auto w-24 ml-4">
+                                <Fileicon />
+                            </figure>
+                            <div class="card-body w-72 text-black">
+                                <h2 class="card-title">Art. {norma.articolo} del {decode_codici[norma.codice]}</h2>
+                                <p class="font-bold">
+                                    {norma.libro}
+                                </p>
+                                <p class="font-semibold">{norma.content}</p>
+                                <div class="card-actions justify-end flex">
+                                    <a href={norma.url} target="_blank" class="btn btn-sm bg-purple-950 text-white font-roboto hover:bg-purple-800">Vedi</a>
+                                    <button class="btn btn-sm bg-purple-950 text-white font-roboto hover:bg-purple-800" on:click={add_project(0, norma.id)}>Aggiungi a progetto</button>
                                 </div>
                             </div>
                         </div>

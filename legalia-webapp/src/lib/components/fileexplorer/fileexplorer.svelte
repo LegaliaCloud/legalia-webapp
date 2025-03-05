@@ -2,7 +2,7 @@
     import Fileicon from "../misc/fileicon.svelte";
 	//import Foldericon from "../misc/foldericon.svelte";
     import { onMount } from "svelte";
-    import {files, get_files} from "./filesFunction.svelte";
+    import {files, get_files} from "./filesModule.svelte";
     $: filesList = $files;
 
     onMount(get_files);

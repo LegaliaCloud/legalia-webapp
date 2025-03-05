@@ -24,10 +24,13 @@ export default defineConfig({
         	target: 'http://localhost:8000',
      		changeOrigin: true
       		},
-			'search/chat': {
+			'/search/chat': {
         	target: 'http://localhost:8000',
-     		changeOrigin: true,
-        	rewrite: (path) => path.replace(/^\/chat/, '/chat'),
+     		changeOrigin: true
+      		},
+			'/search/norme/': {
+        	target: 'http://localhost:8000',
+     		changeOrigin: true
       		},
 			'/chat/create/': {
         	target: 'http://localhost:8000',
@@ -64,7 +67,15 @@ export default defineConfig({
 			'/files/upload': {
         	target: 'http://localhost:8000',
      		changeOrigin: true,
-      		}
+      		},
+			'/generate/defense': {
+        	target: 'http://localhost:8000',
+     		changeOrigin: true
+			},
+			'/generate/report': {
+        	target: 'http://localhost:8000',
+     		changeOrigin: true
+			}
 		}
 	}
 });

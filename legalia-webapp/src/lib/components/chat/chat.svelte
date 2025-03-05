@@ -5,40 +5,127 @@
   import Sendicon from "../misc/sendicon.svelte";
   import Paperclipicon from "../misc/paperclipicon.svelte";
   import Removeatteachedicon from "../misc/removeatteachedicon.svelte";
-  import { files } from "../fileexplorer/filesFunction.svelte";
+  import Reporticon from "../misc/reporticon.svelte";
+  import Shildicon from "../misc/shildicon.svelte";
+  import { dateFormat } from "../misc/usefulFunctions.svelte";
+  import { files } from "../fileexplorer/filesModule.svelte";
+  import { chat_all, chat_history } from "./chatHistoryModule.svelte";
+  import { sentenze, norme } from "../projects/projectsModule.svelte";
+  import { decode_codici } from "../researchResult/researchModule.svelte";
   import { afterUpdate } from 'svelte';
   import { onMount } from "svelte";
+	import { marked } from "marked";
 
   interface Message {
         sender:number, // 0 = ChatBot | 1 = User 
         text:string
   };
 
-  interface Chat{
-        chat_id:number,
-        title:string,
-        project_id:number,
-        last_update:string
-  }
-
   interface Atteached {
-    senstenze_ids:number[],
+    sentenze_ids:number[],
     norme_ids:number[],
     file_ids:number[]
   }
 
   let atteached: Atteached = {
-    senstenze_ids: [],
+    sentenze_ids: [],
     norme_ids: [],
     file_ids: []
   };
   $: filesList = $files;
+  $: sentenzeList = $sentenze;
+  $: normeList = $norme;
 
   let  user_message:string = "", chat_title = "Nuova Chat";
   let chat:Message[] = [];
-  let history:Chat[] = [];
+  $: history = $chat_history;
   let active_chat:number = -1;
   let chatbot_loading:boolean = false;
+
+  let context:string="";
+  let difense_lines:string = "";
+
+  function indexOfChat(chat_id:number){
+        let index = -1;
+        for(let i = 0; i < history.length; i++){
+            if(history[i].chat_id == chat_id){
+              index = i;
+              break;
+            }
+        }
+        return index;
+    }
+
+  async function generate_defense(){
+    difense_lines = "";
+    if(context != ""){
+      let payload = {
+        context: context,
+        number_of_lines: 3
+      }
+      try{
+        const response = await fetch(`/generate/defense`,
+          {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(payload)
+          });
+        if(!response.ok){
+            let error = `Errore HTTP: ${response.status}`;
+            throw new Error(error);
+        }
+        let text = await response.text();
+        difense_lines = text.trim().replace(/\n\n/g, "<br><br>").replace(/\n/g, " ")
+      }catch(err){
+        console.log(err);
+        difense_lines = "Si è verificato un errore. Riprova";
+      } finally {
+        defenseResultModal.showModal();
+      }
+    }
+  }
+
+  async function downloadReport(){
+    if(active_chat != -1){
+      try{
+        const response = await fetch(`/generate/report?chat_id=${active_chat}&title=${history[indexOfChat(active_chat)].title}`, {
+        method: "POST"
+        });
+
+        if (!response.ok) {
+          throw new Error("Errore nel download del file");
+        }
+
+        // Converti la risposta in un Blob
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+
+        // Estrai il nome del file dall'header Content-Disposition (se presente)
+        const contentDisposition = response.headers.get("content-disposition");
+        let fileName = "download.pdf"; // Nome di default
+
+        if (contentDisposition) {
+          const match = contentDisposition.match(/filename="?([^"]+)"?/);
+          if (match) {
+            fileName = match[1];
+          }
+        }
+
+        // Crea un link per il download
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = fileName; // Nome del file
+        document.body.appendChild(a);
+        a.click();
+
+        // Pulizia
+        window.URL.revokeObjectURL(url);
+        document.body.removeChild(a);
+      } catch (error) {
+        console.error("Errore durante il download:", error);
+      }
+    }  
+  }
 
   async function load_chat(chat_id:number){
     chat = [];
@@ -62,34 +149,11 @@
       });
       active_chat = chat_id;
       atteached.norme_ids = [];
-      atteached.senstenze_ids = [];
+      atteached.sentenze_ids = [];
       atteached.file_ids = [];
     }catch(err){
       chat=[...chat, {sender: 0, text: "Qualcosa è andato storto nel ricaricare la chat. Riprova."}];
       console.log(err);
-    }
-  }
-
-  async function chat_all() {
-    history = [];
-    try{
-        const response = await fetch('/chat/all');
-        if(!response.ok){
-            let error = `Errore HTTP: ${response.status}`;
-            throw new Error(error);
-        }
-        let responseData = await response.json();
-        responseData.forEach(chat => {
-            history=[...history,{
-                chat_id: chat.id,
-                title: chat.title,
-                project_id: chat.project_id,
-                last_update: chat.updated_at
-            }];
-        });
-        sort_history();
-    } catch(err){
-        console.log(err.message);
     }
   }
 
@@ -136,7 +200,7 @@
           let responseData = await response.json();
           chatbot_msg = responseData.response;
           atteached.norme_ids = [];
-          atteached.senstenze_ids = [];
+          atteached.sentenze_ids = [];
           atteached.file_ids = [];
         } catch (err){
           console.log(err.message);
@@ -149,39 +213,31 @@
     }
   }
 
-  function allega_file(file_id:number){
-    atteached.file_ids = [...atteached.file_ids, file_id];
-  }
-
-  function remove_file(file_id:number){
-    atteached.file_ids = atteached.file_ids.filter(id => id !== file_id);
-  }
-
-  function sort_history(){
-    for(let i=1; i<history.length; i++){
-      for(let j=(history.length-1);j>=i;j--){
-        let date1 = new Date(history[j].last_update).getTime();
-        let date2 = new Date(history[j-1].last_update).getTime();
-        if(date1 > date2){
-          let temp:Chat = history[j];
-          history[j] = history[j-1];
-          history[j-1] = temp;
-        }
-      }
+  function allega(doc_type:number,doc_id:number){
+    //doc_type: 0 = norma, 1 = sentenza, 2 = file utente
+    if(doc_type == 0){
+      atteached.norme_ids = [...atteached.norme_ids, doc_id];
+    } else if(doc_type == 1){
+      atteached.sentenze_ids = [...atteached.sentenze_ids, doc_id];
+    } else if(doc_type == 2) {
+      atteached.file_ids = [...atteached.file_ids, doc_id];
     }
+    
   }
 
-  function dateFormat(dateString:string){
-      let dateNtime = dateString.split('T');
-      let date = dateNtime[0].split('-');
-      let time = dateNtime[1].split(':');
-      time.pop();
-      return date[2]+"/"+date[1]+"/"+date[0]+" "+time.join(':');
+  function rimuovi_allegato(doc_type:number,doc_id:number){
+    if(doc_type == 0){
+      atteached.norme_ids = atteached.norme_ids.filter(id => id !== doc_id);
+    } else if(doc_type == 1){
+      atteached.sentenze_ids = atteached.sentenze_ids.filter(id => id !== doc_id);
+    } else if(doc_type == 2) {
+      atteached.file_ids = atteached.file_ids.filter(id => id !== doc_id);
+    }
   }
 
   onMount(chat_all);
 
-  let chat_container, atteachedModal;
+  let chat_container, atteachedModal, generateDefenseModal, defenseResultModal;
   // Funzione per scorrere automaticamente alla fine della chat
   function scrollToBottom() {
       if (chat_container) {
@@ -197,6 +253,11 @@
 
 <div class="mx-8 px-3 py-4 rounded-box" style="height: 72%; background: linear-gradient(170deg, #3b0764 30%, #712da4);">
   <div class="relative h-full">
+    <div class="absolute top-0 left-0 z-[10]">
+      <button on:click={downloadReport} class="btn rounded-full my-1 bg-transparent border-transparent tooltip capitalize hover:text-white hover:bg-green-400 hover:border-green-400" data-tip="Genera report chat"><Reporticon /></button>
+      <br>
+      <button on:click={generateDefenseModal.showModal()} class="btn rounded-full my-1 bg-transparent border-transparent tooltip capitalize hover:text-white hover:bg-green-400 hover:border-green-400" data-tip="Genera linee difensive"><Shildicon /></button>
+    </div>
     <div bind:this={chat_container} class="absolute top-2 overflow-y-auto px-1" style="width: 100%; height:80%;">
       {#if chat.length == 0}
       <div class="text-center text-white mt-2 mx-12">
@@ -233,11 +294,13 @@
     </div>
     <div class="absolute bottom-0 w-full">
       <div class = "w-full grid grid-cols-12 gap-2 mt-3">
-        <div class="relative">
-          <button on:click={atteachedModal.showModal()} class="btn w-full border-green-200 bg-green-200 text-black rounded-full hover:bg-green-400 hover:border-green-400"><Paperclipicon /></button>
-          {#if (atteached.norme_ids.length + atteached.senstenze_ids.length + atteached.file_ids.length) > 0}
-            <div class="badge badge-secondary absolute top-0 right-0">{atteached.norme_ids.length + atteached.senstenze_ids.length + atteached.file_ids.length}</div>
-          {/if}
+        <div class="col-span-1 text-center">
+          <button on:click={atteachedModal.showModal()} class="btn border-green-200 bg-green-200 text-black rounded-full hover:text-white hover:bg-green-400 hover:border-green-400 relative">
+            <Paperclipicon />
+            {#if (atteached.norme_ids.length + atteached.sentenze_ids.length + atteached.file_ids.length) > 0}
+              <div class="badge badge-secondary absolute top-0 right-0">{atteached.norme_ids.length + atteached.sentenze_ids.length + atteached.file_ids.length}</div>
+            {/if}
+          </button>
         </div>
         <div class="col-span-10">
           {#if !chatbot_loading}
@@ -246,8 +309,8 @@
             <input type="text" bind:value={user_message} placeholder="Scrivi qui il tuo messaggio..." class="input input-md input-bordered w-full bg-white text-black rounded-full" disabled/>
           {/if}
         </div>
-        <div class="col-span-1">
-          <button on:click={use_chat(user_message)} class="btn w-full border-green-500 bg-green-200 text-black rounded-full hover:bg-green-400 hover:border-green-400"><Sendicon/></button>
+        <div class="col-span-1 text-center">
+          <button on:click={use_chat(user_message)} class="btn border-green-200 bg-green-200 text-black rounded-full hover:text-white hover:bg-green-400 hover:border-green-400"><Sendicon/></button>
         </div>   
       </div>
     </div>
@@ -263,7 +326,7 @@
               <p class="font-bold">{chat.title}</p>
               <p class="text-sm">{dateFormat(chat.last_update)}</p>
               <div class="py-1">
-                  <button on:click={load_chat(chat.chat_id)} class="btn btn-sm capitalize bg-green-200 border-green-200 text-black rounded-full hover:bg-green-400 hover:border-green-400">Carica</button>
+                  <button on:click={load_chat(chat.chat_id)} class="btn btn-sm capitalize bg-green-200 border-green-200 text-black rounded-full hover:text-white hover:bg-green-400 hover:border-green-400">Carica</button>
               </div>          
           </div>
       </div>
@@ -277,31 +340,107 @@
       <div class="w-full">
         <div>
           <h4 class="font-bold">File</h4>
-          {#each filesList as file}
-            <div class="ml-5">
-              <div class="flex gap-2 my-2">
-                {#if !atteached.file_ids.includes(file.id)}
-                  <div><button on:click={allega_file(file.id)} class="btn btn-xs bg-purple-950 border-purple-950 text-white capitalize tooltip" data-tip="Allega"><Paperclipicon /></button></div>
-                {:else}
-                  <div><button on:click={remove_file(file.id)} class="btn btn-xs btn-error text-white capitalize tooltip" data-tip="Rimuovi allegato"><Removeatteachedicon /></button></div>
-                {/if}
-                <div class="py-auto"><p class="font-bold text-sm">{file.name}</p></div>
-              </div>
-            </div>
-          {/each}
+          <div class="ml-6">
+            {#if filesList.length > 0}
+              {#each filesList as file}
+                  <div class="flex gap-2 my-2">
+                    {#if !atteached.file_ids.includes(file.id)}
+                      <div><button on:click={allega(2, file.id)} class="btn btn-xs bg-purple-950 border-purple-950 text-white capitalize tooltip" data-tip="Allega"><Paperclipicon /></button></div>
+                    {:else}
+                      <div><button on:click={rimuovi_allegato(2, file.id)} class="btn btn-xs btn-error text-white capitalize tooltip" data-tip="Rimuovi allegato"><Removeatteachedicon /></button></div>
+                    {/if}
+                    <div class="py-auto"><p class="font-bold text-sm">{file.name}</p></div>
+                  </div>
+              {/each}
+            {:else}
+              <p class="text-sm mt-2">
+                Non ci sono file da allegare.<br>
+                Carica un file dal tuo dispositivo usando la barra laterale sinistra per poterlo allegare alla chat.
+              </p>
+            {/if}
+          </div>
         </div>
         <div class="divider"></div>
         <div>
           <h4 class="font-bold">Norme</h4>
+          <div class="ml-6">
+            {#if normeList.length > 0}
+              {#each normeList as norma}
+                  <div class="flex gap-2 my-2">
+                    {#if !atteached.norme_ids.includes(norma.id)}
+                      <div><button on:click={allega(0, norma.id)} class="btn btn-xs bg-purple-950 border-purple-950 text-white capitalize tooltip" data-tip="Allega"><Paperclipicon /></button></div>
+                    {:else}
+                      <div><button on:click={rimuovi_allegato(0, norma.id)} class="btn btn-xs btn-error text-white capitalize tooltip" data-tip="Rimuovi allegato"><Removeatteachedicon /></button></div>
+                    {/if}
+                    <div class="py-auto"><p class="font-bold text-sm">Art {norma.articolo} {decode_codici[norma.codice]}</p></div>
+                  </div>
+              {/each}
+            {:else}
+              <p class="text-sm mt-2">
+                Non ci sono norme da allegare.<br>
+                Cerca una norma con il nostro motore di ricerca e aggiungila al progetto per poterla allegare alla chat.
+              </p>
+            {/if}
+          </div>
         </div>
         <div class="divider"></div>
         <div>
           <h4 class="font-bold">Sentenze</h4>
+          <div class="ml-6">
+            {#if sentenzeList.length > 0}
+              {#each sentenzeList as sentenza}
+                  <div class="flex gap-2 my-2">
+                    {#if !atteached.sentenze_ids.includes(sentenza.position_index)}
+                      <div><button on:click={allega(1, sentenza.position_index)} class="btn btn-xs bg-purple-950 border-purple-950 text-white capitalize tooltip" data-tip="Allega"><Paperclipicon /></button></div>
+                    {:else}
+                      <div><button on:click={rimuovi_allegato(1, sentenza.position_index)} class="btn btn-xs btn-error text-white capitalize tooltip" data-tip="Rimuovi allegato"><Removeatteachedicon /></button></div>
+                    {/if}
+                    <div class="py-auto"><p class="font-bold text-sm">{sentenza.description.split(" \n")[0]}</p></div>
+                  </div>
+              {/each}
+            {:else}
+              <p class="text-sm mt-2">
+                Non ci sono sentenze da allegare.<br>
+                Cerca una sentenza con il nostro motore di ricerca e aggiungila al progetto per poterla allegare alla chat.
+              </p>
+            {/if}
+          </div>
         </div>
+      </div>
+  </div>
+  <form method="dialog" class="modal-backdrop">
+    <button>close</button>
+  </form>
+</dialog>
+
+<dialog bind:this={generateDefenseModal} class="modal">
+  <div class="modal-box bg-white text-black">
+      <h3 class="text-lg font-bold">Genera linee difensive</h3>
+      <p class="text-sm text-right">Premi ESC per uscire</p>
+      <div>
+        <div class="w-full my-2">
+          <label class="label" for="context">Descrivi il caso per cui desideri realizzare le linee difensive</label>
+          <textarea id="context" bind:value={context} class="textarea text-black bg-neutral-200 w-full" placeholder="Descrizione del caso"></textarea>
+        </div>
+      </div>
+      <div class="text-center">
+        <form method="dialog">
+          <!-- if there is a button in form, it will close the modal -->
+          <button on:click={generate_defense} class="btn bg-purple-950 text-white capitalize">Genera</button>
+        </form>
       </div>
   </div>
 </dialog>
 
+<dialog bind:this={defenseResultModal} class="modal">
+  <div class="modal-box bg-white text-black">
+      <h3 class="text-lg font-bold">Linee difensive</h3>
+      <p class="text-sm text-right">Premi ESC per uscire</p>
+      <div class="overflow-y-auto my-4 bg-neutral-200 p-4 rounded-lg" style="max-height: 400px;">
+        {@html marked(difense_lines)}
+      </div>
+  </div>
+</dialog>
 
 <style>
   /* Stile della scrollbar (per Chrome, Edge e Safari) */
