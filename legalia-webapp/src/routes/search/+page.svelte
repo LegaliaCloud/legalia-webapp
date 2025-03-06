@@ -5,7 +5,7 @@
     import ChatDemo from '$lib/components/chat/chat-demo.svelte';
     import { onMount} from "svelte";
     import type { Norma } from "$lib/components/researchResult/researchModule.svelte";
-    import { decode_codici } from "$lib/components/researchResult/researchModule.svelte";
+    import { decodeCodici } from "$lib/components/researchResult/researchModule.svelte";
     import Hero from '$lib/components/hero/hero.svelte';
 
     let question: string = "";
@@ -395,7 +395,7 @@
                                 <Fileicon />
                             </figure>
                             <div class="card-body w-72 text-black">
-                                <h2 class="card-title">Art. {norma.articolo} del {decode_codici[norma.codice]}</h2>
+                                <h2 class="card-title">Art. {norma.articolo} del {decodeCodici[norma.codice]}</h2>
                                 <p class="font-bold">
                                     {norma.libro}
                                 </p>

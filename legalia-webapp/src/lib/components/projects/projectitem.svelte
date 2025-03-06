@@ -21,7 +21,7 @@ class="w-full flex items-center rounded-lg border-l-4 transition-colors duration
         <Dotsicon />
       </div>
       <ul class="dropdown-content menu shadow bg-purple-200 rounded-box w-44 z-[2]">
-        <li><a class="text-purple-950 hover:text-purple-100 hover:bg-purple-800">Rinomina progetto</a></li>
+        <li><p class="text-purple-950 hover:text-purple-100 hover:bg-purple-800">Rinomina progetto</p></li>
         {#if !active}
           <li><button on:click={project_toggle(id)} class="text-purple-950 hover:text-purple-100  hover:bg-purple-800">Attiva progetto</button></li>
         {/if}

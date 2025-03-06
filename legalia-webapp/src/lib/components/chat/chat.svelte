@@ -11,7 +11,7 @@
   import { files } from "../fileexplorer/filesModule.svelte";
   import { chat_all, chat_history } from "./chatHistoryModule.svelte";
   import { sentenze, norme } from "../projects/projectsModule.svelte";
-  import { decode_codici } from "../researchResult/researchModule.svelte";
+  import { decodeCodici } from "../researchResult/researchModule.svelte";
   import { afterUpdate } from 'svelte';
   import { onMount } from "svelte";
 	import { marked } from "marked";
@@ -41,6 +41,8 @@
   $: history = $chat_history;
   let active_chat:number = -1;
   let chatbot_loading:boolean = false;
+  let isLoading = false; // Add loading state
+
 
   let context:string="";
   let difense_lines:string = "";
@@ -56,34 +58,39 @@
         return index;
     }
 
-  async function generate_defense(){
-    difense_lines = "";
-    if(context != ""){
-      let payload = {
-        context: context,
-        number_of_lines: 3
-      }
-      try{
-        const response = await fetch(`/generate/defense`,
-          {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify(payload)
-          });
-        if(!response.ok){
-            let error = `Errore HTTP: ${response.status}`;
-            throw new Error(error);
+    async function generate_defense() {
+      if (!context || isLoading) return;
+      
+      isLoading = true;
+      difense_lines = "";
+      
+      try {
+        const payload = {
+          context: context,
+          number_of_lines: 3
+        };
+
+        const response = await fetch(`/generate/defense`, {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify(payload)
+        });
+
+        if (!response.ok) {
+          throw new Error(`Errore HTTP: ${response.status}`);
         }
-        let text = await response.text();
-        difense_lines = text.trim().replace(/\n\n/g, "<br><br>").replace(/\n/g, " ")
-      }catch(err){
-        console.log(err);
+
+        const text = await response.text();
+        difense_lines = text.trim().replace(/\n\n/g, "<br><br>").replace(/\n/g, " ");
+      } catch (err) {
+        console.error(err);
         difense_lines = "Si è verificato un errore. Riprova";
       } finally {
+        isLoading = false;
         defenseResultModal.showModal();
+        generateDefenseModal.close();
       }
     }
-  }
 
   async function downloadReport(){
     if(active_chat != -1){
@@ -372,7 +379,7 @@
                     {:else}
                       <div><button on:click={rimuovi_allegato(0, norma.id)} class="btn btn-xs btn-error text-white capitalize tooltip" data-tip="Rimuovi allegato"><Removeatteachedicon /></button></div>
                     {/if}
-                    <div class="py-auto"><p class="font-bold text-sm">Art {norma.articolo} {decode_codici[norma.codice]}</p></div>
+                    <div class="py-auto"><p class="font-bold text-sm">Art {norma.articolo} {decodeCodici[norma.codice]}</p></div>
                   </div>
               {/each}
             {:else}
@@ -413,35 +420,53 @@
   </form>
 </dialog>
 
+
+
 <dialog bind:this={generateDefenseModal} class="modal">
   <div class="modal-box bg-white text-black">
-      <h3 class="text-lg font-bold">Genera linee difensive</h3>
-      <p class="text-sm text-right">Premi ESC per uscire</p>
-      <div>
-        <div class="w-full my-2">
-          <label class="label" for="context">Descrivi il caso per cui desideri realizzare le linee difensive</label>
-          <textarea id="context" bind:value={context} class="textarea text-black bg-neutral-200 w-full" placeholder="Descrizione del caso"></textarea>
-        </div>
+    <h3 class="text-lg font-bold">Genera linee difensive</h3>
+    <p class="text-sm text-right">Premi ESC per uscire</p>
+    <div>
+      <div class="w-full my-2">
+        <label class="label" for="context">Descrivi il caso per cui desideri realizzare le linee difensive</label>
+        <textarea 
+          id="context" 
+          bind:value={context} 
+          class="textarea text-black bg-neutral-200 w-full" 
+          placeholder="Descrizione del caso"
+          disabled={isLoading}
+        ></textarea>
       </div>
-      <div class="text-center">
-        <form method="dialog">
-          <!-- if there is a button in form, it will close the modal -->
-          <button on:click={generate_defense} class="btn bg-purple-950 text-white capitalize">Genera</button>
-        </form>
-      </div>
+    </div>
+    <div class="text-center">
+      <form method="dialog" on:submit|preventDefault>
+        {#if isLoading}
+          <button class="btn bg-purple-950 text-white capitalize" disabled>
+            <span class="loading loading-spinner"></span>
+            Generando...
+          </button>
+        {:else}
+          <button 
+            on:click|preventDefault={generate_defense} 
+            class="btn bg-purple-950 text-white capitalize"
+          >
+            Genera
+          </button>
+        {/if}
+      </form>
+    </div>
   </div>
 </dialog>
 
-<dialog bind:this={defenseResultModal} class="modal">
-  <div class="modal-box bg-white text-black">
+  <dialog bind:this={defenseResultModal} class="modal">
+    <div class="modal-box bg-white text-black">
       <h3 class="text-lg font-bold">Linee difensive</h3>
       <p class="text-sm text-right">Premi ESC per uscire</p>
       <div class="overflow-y-auto my-4 bg-neutral-200 p-4 rounded-lg" style="max-height: 400px;">
-        {@html marked(difense_lines)}
+        {@html marked(difense_lines.replace(/\\n/g, '\n'), { breaks: true })}
       </div>
-  </div>
-</dialog>
-
+    </div>
+  </dialog>
 <style>
   /* Stile della scrollbar (per Chrome, Edge e Safari) */
   ::-webkit-scrollbar {
