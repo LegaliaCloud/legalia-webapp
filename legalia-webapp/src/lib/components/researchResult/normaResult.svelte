@@ -6,8 +6,11 @@
   // State for tab management
   let activeTab = "spiegazione";
   
+  // Generate a unique ID for the modal
+  let modalId = `normaDetailModal-${norma.articolo}`;
+  
   function handleOpenModal() {
-    const modal = document.getElementById('normaDetailModal') as HTMLDialogElement;
+    const modal = document.getElementById(modalId) as HTMLDialogElement;
     if (modal) {
       modal.showModal();
     }
@@ -32,7 +35,7 @@
   </div>
 </div>
 
-<dialog id="normaDetailModal" class="modal">
+<dialog id={modalId} class="modal">
   <div class="modal-box max-w-2xl">
     <div class="flex items-center justify-between mb-4 border-b pb-2">
       <h3 class="text-xl font-bold">

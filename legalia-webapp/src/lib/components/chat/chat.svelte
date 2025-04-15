@@ -46,6 +46,7 @@
 
   let context:string="";
   let difense_lines:string = "";
+  let customRequestModal;
 
   function indexOfChat(chat_id:number){
         let index = -1;
@@ -92,11 +93,23 @@
       }
     }
 
+    let customRequest: string = "";
+
   async function downloadReport(){
     if(active_chat != -1){
       try{
-        const response = await fetch(`/generate/report?chat_id=${active_chat}&title=${history[indexOfChat(active_chat)].title}`, {
-        method: "POST"
+        const payload = {
+          chat_id: active_chat,
+          title: history[indexOfChat(active_chat)].title,
+          customRequest: customRequest
+        };
+
+        const response = await fetch(`/generate/report`, {
+          method: "POST",
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(payload)
         });
 
         if (!response.ok) {
@@ -130,6 +143,8 @@
         document.body.removeChild(a);
       } catch (error) {
         console.error("Errore durante il download:", error);
+      } finally {
+        customRequestModal.close();
       }
     }  
   }
@@ -261,9 +276,8 @@
 <div class="mx-8 px-3 py-4 rounded-box" style="height: 72%; background: linear-gradient(170deg, #3b0764 30%, #712da4);">
   <div class="relative h-full">
     <div class="absolute top-0 left-0 z-[10]">
-      <button on:click={downloadReport} class="btn rounded-full my-1 bg-transparent border-transparent tooltip capitalize hover:text-white hover:bg-green-400 hover:border-green-400" data-tip="Genera report chat"><Reporticon /></button>
-      <br>
-      <button on:click={generateDefenseModal.showModal()} class="btn rounded-full my-1 bg-transparent border-transparent tooltip capitalize hover:text-white hover:bg-green-400 hover:border-green-400" data-tip="Genera linee difensive"><Shildicon /></button>
+      <button on:click={customRequestModal.showModal()} class="btn rounded-full my-1 bg-transparent border-transparent tooltip capitalize text-white hover:bg-green-400 hover:border-green-400" data-tip="Genera report chat"><Reporticon /></button>      <br>
+      <button on:click={generateDefenseModal.showModal()} class="btn rounded-full my-1 bg-transparent border-transparent tooltip capitalize text-white hover:bg-green-400 hover:border-green-400" data-tip="Genera linee difensive"><Shildicon /></button>
     </div>
     <div bind:this={chat_container} class="absolute top-2 overflow-y-auto px-1" style="width: 100%; height:80%;">
       {#if chat.length == 0}
@@ -339,6 +353,34 @@
       </div>
   {/each}
 </div>
+
+<dialog bind:this={customRequestModal} class="modal">
+  <div class="modal-box bg-white text-black">
+    <h3 class="text-lg font-bold">Richieste Personalizzate</h3>
+    <p class="text-sm text-right">Premi ESC per uscire</p>
+    <div>
+      <div class="w-full my-2">
+        <label class="label" for="customRequest">Inserisci le tue richieste personalizzate</label>
+        <textarea 
+          id="customRequest" 
+          bind:value={customRequest} 
+          class="textarea text-black bg-neutral-200 w-full" 
+          placeholder="Inserisci qui le tue richieste..."
+        ></textarea>
+      </div>
+    </div>
+    <div class="text-center">
+      <form method="dialog" on:submit|preventDefault>
+        <button 
+          on:click|preventDefault={downloadReport} 
+          class="btn bg-purple-950 text-white capitalize"
+        >
+          Genera PDF
+        </button>
+      </form>
+    </div>
+  </div>
+</dialog>
 
 <dialog bind:this={atteachedModal} class="modal">
   <div class="modal-box bg-white text-black">

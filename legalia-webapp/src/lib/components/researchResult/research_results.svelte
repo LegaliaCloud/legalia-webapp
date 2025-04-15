@@ -18,7 +18,7 @@
                 <NormaResult {norma} />
             {/each}
         {:else}
-            <p class="text-center text-sm">Ricerca le norme utili per te dal nostro motore di ricerca e aggiungile al tuo progetto per poterle allegare alla chat con LegalIA</p>
+            <p class="text-center text-white text-sm">Ricerca le norme utili per te dal nostro motore di ricerca e aggiungile al tuo progetto per poterle allegare alla chat con LegalIA</p>
             <div class="text-center my-2"><a class="btn btn-sm btn-warning rounded-full" href="./search"><Searchicon /></a></div>
         {/if}
     </div>
@@ -30,7 +30,7 @@
                 <ResultSentenza {sentenza}/>
             {/each}
         {:else}
-            <p class="text-center text-sm">Ricerca le senteze più adatte al tuo caso dal nostro motore di ricerca e aggiungile al tuo progetto per poterle allegare alla chat con LegalIA</p>
+            <p class="text-center text-sm text-white">Ricerca le senteze più adatte al tuo caso dal nostro motore di ricerca e aggiungile al tuo progetto per poterle allegare alla chat con LegalIA</p>
             <div class="text-center my-2"><a class="btn btn-sm btn-warning rounded-full" href="./search"><Searchicon /></a></div>
         {/if}
     </div>
