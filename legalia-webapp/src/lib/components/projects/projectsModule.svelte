@@ -20,50 +20,66 @@
     let activeProjectId:number;
 
     export async function get_projects(){
-        try{
-            const response = await fetch('/project/');
-            if(!response.ok){
-                let error = `Errore HTTP: ${response.status}`;
-                throw new Error(error);
-            }
-            let responseData:Project[] = await response.json();
-            for(let i=0; i<responseData.length;i++){
-                if(responseData[i].state=="active"){
-                    activeProjectId = responseData[i].id;
-                    if(i != 0){
-                        let temp = responseData[i];
-                        responseData[i] = responseData[0];
-                        responseData[0] = temp;
+        const authHeader = sessionStorage.getItem('authHeader');
+        if(authHeader != null){
+            try{
+                const response = await fetch('/project/',{
+                    headers:{
+                        'Authorization': authHeader
                     }
-                    break;
+                });
+                if(!response.ok){
+                    let error = `Errore HTTP: ${response.status}`;
+                    throw new Error(error);
                 }
+                let responseData:Project[] = await response.json();
+                for(let i=0; i<responseData.length;i++){
+                    if(responseData[i].state=="active"){
+                        activeProjectId = responseData[i].id;
+                        if(i != 0){
+                            let temp = responseData[i];
+                            responseData[i] = responseData[0];
+                            responseData[0] = temp;
+                        }
+                        break;
+                    }
+                }
+                projects.set(responseData);
+                if(responseData.length > 0){
+                    get_norme_sentenze(authHeader);
+                }
+            }catch(err){
+                console.log(err);
             }
-            projects.set(responseData);
-            if(responseData.length > 0){
-                get_norme_sentenze();
-            }
-        }catch(err){
-            console.log(err);
         }
     }
 
     export async function project_toggle(project_id:number){
-        try{
-            const response = await fetch(`/project/toggle/${project_id}`);
-            if(!response.ok){
-                let error = `Errore HTTP: ${response.status}`;
-                throw new Error(error);
+        const authHeader = sessionStorage.getItem('authHeader');
+        if(authHeader != null){
+            try{
+                const response = await fetch(`/project/toggle/${project_id}`,{
+                    headers: {'Authorization': authHeader}
+                });
+                if(!response.ok){
+                    let error = `Errore HTTP: ${response.status}`;
+                    throw new Error(error);
+                }
+                await get_projects();
+                chat_all();
+            }catch(err){
+                console.log(err);
             }
-            await get_projects();
-            chat_all();
-        }catch(err){
-            console.log(err);
         }
     }
 
-    async function get_active_project(id:number){
+    async function get_active_project(id:number, authHeader:string){
         try{
-            const response = await fetch(`/project/${id}`);
+            const response = await fetch(`/project/${id}`, {
+                    headers:{
+                        'Authorization': authHeader
+                    }
+            });
             if(!response.ok){
                 let error = `Errore HTTP: ${response.status}`;
                 throw new Error(error);
@@ -76,9 +92,13 @@
 
     }
 
-    async function get_sentenza_document(document_id: number){
+    async function get_sentenza_document(document_id: number, authHeader:string){
         try {
-            const response = await fetch(`/search/document/${document_id}`);
+            const response = await fetch(`/search/document/${document_id}`, {
+                headers:{
+                    'Authorization': authHeader
+                }
+            });
             if (!response.ok) {
                 let error = `Errore HTTP: ${response.status}`;
                 throw new Error(error);
@@ -91,9 +111,13 @@
         }
     }
 
-    async function get_norma_document(document_id: number){
+    async function get_norma_document(document_id: number, authHeader:string){
         try {
-            const response = await fetch(`/search/norme/${document_id}`);
+            const response = await fetch(`/search/norme/${document_id}`,{
+                headers: {
+                    'Authorization': authHeader
+                }
+            });
             if (!response.ok) {
                 let error = `Errore HTTP: ${response.status}`;
                 throw new Error(error);
@@ -106,19 +130,19 @@
         }
     }
 
-    async function get_norme_sentenze(){
+    async function get_norme_sentenze(authHeader:string){
         let sentenzeList:Sentenza[] = [];
         let normeList:Norma[] = [];
-        const activeProject = await get_active_project(activeProjectId);
+        const activeProject = await get_active_project(activeProjectId, authHeader);
         if(activeProject != null){
             for(let i=0; i<activeProject.sentenze.length;i++){
-                const response = await get_sentenza_document(activeProject.sentenze[i]);
+                const response = await get_sentenza_document(activeProject.sentenze[i], authHeader);
                 if(response.ok){
                     sentenzeList = [...sentenzeList, response.doc];
                 }
             }
             for(let i=0; i<activeProject.norme.length;i++){
-                const response = await get_norma_document(activeProject.norme[i]);
+                const response = await get_norma_document(activeProject.norme[i], authHeader);
                 if(response.ok){
                     normeList = [...normeList, response.doc];
                 }

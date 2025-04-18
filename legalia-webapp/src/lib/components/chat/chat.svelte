@@ -60,7 +60,8 @@
     }
 
     async function generate_defense() {
-      if (!context || isLoading) return;
+      const authHeader = sessionStorage.getItem("authHeader");
+      if (!context || isLoading || authHeader == null) return;
       
       isLoading = true;
       difense_lines = "";
@@ -73,7 +74,10 @@
 
         const response = await fetch(`/generate/defense`, {
           method: 'POST',
-          headers: {'Content-Type': 'application/json'},
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': authHeader
+          },
           body: JSON.stringify(payload)
         });
 
@@ -96,7 +100,8 @@
     let customRequest: string = "";
 
   async function downloadReport(){
-    if(active_chat != -1){
+    const authHeader = sessionStorage.getItem("authHeader");
+    if(active_chat != -1 && authHeader != null){
       try{
         const payload = {
           chat_id: active_chat,
@@ -108,6 +113,7 @@
           method: "POST",
           headers: {
             'Content-Type': 'application/json',
+            'Authorization': authHeader
           },
           body: JSON.stringify(payload)
         });
@@ -150,37 +156,43 @@
   }
 
   async function load_chat(chat_id:number){
-    chat = [];
-    try{
-      const response = await fetch(`/chat/get/${chat_id}`);
-      if(!response.ok){
-          let error = `Errore HTTP: ${response.status}`;
-          throw new Error(error);
+    const authHeader = sessionStorage.getItem("authHeader");
+    if(authHeader != null){
+      chat = [];
+      try{
+        const response = await fetch(`/chat/get/${chat_id}`, {
+          headers:{'Authorization': authHeader}
+        });
+        if(!response.ok){
+            let error = `Errore HTTP: ${response.status}`;
+            throw new Error(error);
+        }
+        let responseData = await response.json();
+        responseData.messages.forEach(message=>{
+          let msgSender:number=-1;
+          if(message.sender == 'assistant'){
+            msgSender = 0;
+          } else if(message.sender == 'user'){
+            msgSender = 1;
+          }
+          if(msgSender != -1){
+            chat=[...chat, {sender: msgSender, text: message.text}];
+          }
+        });
+        active_chat = chat_id;
+        atteached.norme_ids = [];
+        atteached.sentenze_ids = [];
+        atteached.file_ids = [];
+      }catch(err){
+        chat=[...chat, {sender: 0, text: "Qualcosa è andato storto nel ricaricare la chat. Riprova."}];
+        console.log(err);
       }
-      let responseData = await response.json();
-      responseData.messages.forEach(message=>{
-        let msgSender:number=-1;
-        if(message.sender == 'assistant'){
-          msgSender = 0;
-        } else if(message.sender == 'user'){
-          msgSender = 1;
-        }
-        if(msgSender != -1){
-          chat=[...chat, {sender: msgSender, text: message.text}];
-        }
-      });
-      active_chat = chat_id;
-      atteached.norme_ids = [];
-      atteached.sentenze_ids = [];
-      atteached.file_ids = [];
-    }catch(err){
-      chat=[...chat, {sender: 0, text: "Qualcosa è andato storto nel ricaricare la chat. Riprova."}];
-      console.log(err);
     }
   }
 
   async function use_chat(msg:string){
-    if(msg != "" && !chatbot_loading){
+    const authHeader = sessionStorage.getItem("authHeader");
+    if(msg != "" && !chatbot_loading && authHeader != null){
       user_message = "";
       chatbot_loading = true;
       chat = [...chat, {sender:1, text:msg}];
@@ -190,7 +202,9 @@
       }
       if(chat.length == 1){
         try{
-          const response = await fetch(`/chat/create/?title=${chat_title}`);
+          const response = await fetch(`/chat/create/?title=${chat_title}`,{
+            headers:{'Authorization': authHeader}
+          });
           if(!response.ok){
             let error = `Errore HTTP: ${response.status}`;
             throw new Error(error);
@@ -212,7 +226,10 @@
           const response = await fetch(`/chat/complete?last_message=${msg}&chat_id=${active_chat}`,
           {
               method: 'POST',
-              headers: {'Content-Type': 'application/json'},
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': authHeader
+              },
               body: JSON.stringify(atteached)
           });
           if(!response.ok){

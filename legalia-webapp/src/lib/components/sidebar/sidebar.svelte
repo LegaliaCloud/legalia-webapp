@@ -13,7 +13,8 @@
   let uploadModal;
 
   async function create_project(name:string, desc:string, client:string){
-    if(name != ""){
+    const authHeader = sessionStorage.getItem("authHeader");
+    if(name != "" && authHeader != null){
       let payload = {"name": name, "description": desc, "client": client};
       newProjectName = "";
       newProjectClient = "";
@@ -22,7 +23,10 @@
         const response = await fetch('/project/add',
         {
           method: 'POST',
-          headers: {'Content-Type': 'application/json'},
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': authHeader
+          },
           body: JSON.stringify(payload)
         });
         if(!response.ok){
@@ -37,16 +41,19 @@
   }
 
   async function uploadFile() {
-      if (!newFile) {
-          alert("Seleziona un file prima di caricare!");
-          return;
-      }
+    if (!newFile) {
+        alert("Seleziona un file prima di caricare!");
+        return;
+    }
 
+    const authHeader = sessionStorage.getItem("authHeader");
+    if(authHeader != null){
       let formData = new FormData();
       formData.append("file", newFile);
       try{
         const response = await fetch('/files/upload', {
           method: "POST",
+          headers: {'Authorization': authHeader},
           body: formData
         });
         if(!response.ok){
@@ -58,7 +65,7 @@
         alert("Qualcosa è andato storto nell'upload del file. Riprova!");
         console.log(err);
       }
-
+    }
   }
 
   function handleFileChange(event:Event) {

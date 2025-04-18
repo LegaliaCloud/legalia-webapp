@@ -25,26 +25,34 @@
     }
 
     export async function chat_all() {
-        let history:Chat[] = [];
-        try{
-            const response = await fetch('/chat/all');
-            if(!response.ok){
-                let error = `Errore HTTP: ${response.status}`;
-                throw new Error(error);
+        const authHeader = sessionStorage.getItem("authHeader");
+        if(authHeader != null){
+            let history:Chat[] = [];
+            try{
+                const response = await fetch('/chat/all',{
+                    method: 'GET',
+                    headers: {
+                        'Authorization': authHeader
+                    }
+                });
+                if(!response.ok){
+                    let error = `Errore HTTP: ${response.status}`;
+                    throw new Error(error);
+                }
+                let responseData = await response.json();
+                responseData.forEach(chat => {
+                    history=[...history,{
+                        chat_id: chat.id,
+                        title: chat.title,
+                        project_id: chat.project_id,
+                        last_update: chat.updated_at
+                    }];
+                });
+                sort_history(history);
+                chat_history.set(history);
+            } catch(err){
+                console.log(err.message);
             }
-            let responseData = await response.json();
-            responseData.forEach(chat => {
-                history=[...history,{
-                    chat_id: chat.id,
-                    title: chat.title,
-                    project_id: chat.project_id,
-                    last_update: chat.updated_at
-                }];
-            });
-            sort_history(history);
-            chat_history.set(history);
-        } catch(err){
-            console.log(err.message);
         }
     }
 </script>

@@ -4,6 +4,16 @@
 	import Sidebar from '$lib/components/sidebar/sidebar.svelte';
     import Chat from '$lib/components/chat/chat.svelte';
 	import ResearchResults from '$lib/components/researchResult/research_results.svelte';
+	import {goto} from '$app/navigation';
+	import { onMount } from 'svelte';
+
+	function checkAuthentication(){
+		if(sessionStorage.getItem('authHeader') == null){
+			goto('/login');
+		}
+	}
+
+	onMount(checkAuthentication);
   </script>
   
   <div class="min-h-screen bg-white">

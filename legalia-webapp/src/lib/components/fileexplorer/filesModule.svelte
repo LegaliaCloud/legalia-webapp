@@ -9,16 +9,24 @@
     export let files = writable<File[]>([]);
 
     export async function get_files(){
-        try{
-            const response = await fetch('/files/all');
-            if(!response.ok){
-                let error = `Errore HTTP: ${response.status}`;
-                throw new Error(error);
+        const authHeader = sessionStorage.getItem("authHeader");
+        if(authHeader != null){
+            try{
+                const response = await fetch('/files/all', {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': authHeader
+                    }
+                });
+                if(!response.ok){
+                    let error = `Errore HTTP: ${response.status}`;
+                    throw new Error(error);
+                }
+                const responseData = await response.json();
+                files.set(responseData);
+            }catch(err){
+                console.log(err);
             }
-            const responseData = await response.json();
-            files.set(responseData);
-        }catch(err){
-            console.log(err);
         }
     }
 </script>
