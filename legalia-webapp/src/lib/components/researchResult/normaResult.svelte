@@ -22,7 +22,9 @@
 </script>
 
 <div class="w-full flex items-center rounded-lg border-l-4 transition-colors duration-200 my-2">
-  <div class="flex-grow min-w-0 rounded-md py-3 px-4 bg-white text-black hover:bg-gray-200">
+  <!-- svelte-ignore a11y-no-static-element-interactions -->
+  <!-- svelte-ignore a11y-click-events-have-key-events -->
+  <div on:dblclick={handleOpenModal} class="flex-grow min-w-0 rounded-md py-3 px-4 bg-white text-black hover:bg-gray-200">
     <div class="flex justify-between items-center">
       <div>
         <p class="text-md font-medium truncate">
@@ -30,13 +32,13 @@
         </p>
         <p class="text-sm font-semibold">{decodeCodici[norma.codice]}</p>
       </div>
-      <button class="btn btn-sm ml-4" on:click={handleOpenModal}>Dettagli</button>
+        <!--<button class="btn btn-sm ml-4" on:click={handleOpenModal}>Dettagli</button>-->
     </div>
   </div>
 </div>
 
 <dialog id={modalId} class="modal">
-  <div class="modal-box max-w-2xl">
+  <div class="modal-box max-w-2xl bg-white text-black overflow-y-auto">
     <div class="flex items-center justify-between mb-4 border-b pb-2">
       <h3 class="text-xl font-bold">
         {decodeCodici[norma.codice]} - Art. {norma.articolo}
@@ -53,13 +55,13 @@
     
     <!-- Main content -->
     <div class="prose max-w-full mb-4">
-      <div class="bg-base-200 p-4 rounded-lg">
+      <div class="bg-base-200 p-4 rounded-lg bg-neutral-200 text-black">
         <p>{norma.content}</p>
       </div>
     </div>
     
     <!-- Additional information in tabs -->
-    <div class="tabs tabs-boxed mb-3">
+    <div class="tabs tabs-boxed mb-3  bg-neutral-200">
       <button 
         class="tab {activeTab === 'spiegazione' ? 'tab-active' : ''}" 
         on:click={() => handleTabChange('spiegazione')}
@@ -83,7 +85,7 @@
     <!-- Tab content -->
     <div class="tab-content">
       {#if activeTab === 'spiegazione'}
-        <div class="p-4 bg-base-200 rounded-lg">
+        <div class="p-4 bg-neutral-200 rounded-lg">
           {#if norma.spiegazione}
             <p>{norma.spiegazione}</p>
           {:else}
@@ -93,21 +95,21 @@
       {/if}
       
       {#if activeTab === 'massime'}
-        <div class="p-4 bg-base-200 rounded-lg">
+        <div class="p-4 bg-neutral-200 rounded-lg">
           {#if norma.massime}
             <p>{norma.massime}</p>
           {:else}
-            <p class="text-base-content/70">Nessuna massima disponibile.</p>
+            <p class="text-neutral-content/70">Nessuna massima disponibile.</p>
           {/if}
         </div>
       {/if}
       
       {#if activeTab === 'note'}
-        <div class="p-4 bg-base-200 rounded-lg">
+        <div class="p-4 bg-neutral-200 rounded-lg">
           {#if norma.note}
             <p>{norma.note}</p>
           {:else}
-            <p class="text-base-content/70">Nessuna nota disponibile.</p>
+            <p class="text-neutral-content/70">Nessuna nota disponibile.</p>
           {/if}
         </div>
       {/if}

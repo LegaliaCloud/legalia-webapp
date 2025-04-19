@@ -1,11 +1,12 @@
 <script lang="ts">
     import '../../app.css';
-    import Navbar from '$lib/components/navbar/navbar_1.svelte';
+    import Navbar from '$lib/components/navbar/navbar1.svelte';
     import Fileicon from '$lib/components/misc/fileicon-lg.svelte';
-    import ChatDemo from '$lib/components/chat/chat-demo.svelte';
+    import ChatDemo from '$lib/components/chat/chatDemo.svelte';
     import { onMount} from "svelte";
     import type { Norma } from "$lib/components/researchResult/researchModule.svelte";
     import { decodeCodici } from "$lib/components/researchResult/researchModule.svelte";
+    import { goto } from '$app/navigation';
     import Hero from '$lib/components/hero/hero.svelte';
 
     let question: string = "";
@@ -30,6 +31,12 @@
     let error:string = "";
 
 
+    onMount(() => {
+        if(sessionStorage.getItem('authHeader') == null){
+			goto('/login');
+		}
+    });
+
     /*
     Funzione per spostare automatica all'inizio della sezione risultati quando in
     questa si verifica un cambiamento.
@@ -49,145 +56,171 @@
         }
     });
 
-    async function add_project(doc_type: number,id: number){
+    async function add_project(doc_type:number, id:number){
         //doc_type 0 = norma, 1 = sentenza
-        error = "";
-        let addToProjectAPI:string = '';
-        if(doc_type == 0){
-            addToProjectAPI = '/project/add/norme';
-        } else if (doc_type == 1){
-            addToProjectAPI = '/project/add/sentenze';
-        }
-        try {
-            // Send a direct array of IDs, not an object containing an array
-            let payload = [id];
-            const response = await fetch(addToProjectAPI,
-            {
-                method: 'PUT',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify(payload)
-            });
-            
-            if (!response.ok) {
-                error = `Errore HTTP: ${response.status}`;
-                throw new Error(error);
+        const authHeader = sessionStorage.getItem('authHeader');
+        if(authHeader != null){
+            error = "";
+            let addToProjectAPI:string = '';
+            if(doc_type == 0){
+                addToProjectAPI = '/project/add/norme';
+            } else if (doc_type == 1){
+                addToProjectAPI = '/project/add/sentenze';
             }
-            
-            // Show confirmation message to user
-            alert("Documento aggiunto al progetto attivo con successo!");
-            
-        } catch (err) {
-            error = err.message;
-            alert("Errore nell'aggiungere il documento al progetto: " + error);
+            try {
+                // Send a direct array of IDs, not an object containing an array
+                let payload = [id];
+                const response = await fetch(addToProjectAPI,
+                {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': authHeader
+                    },
+                    body: JSON.stringify(payload)
+                });
+                
+                if (!response.ok) {
+                    error = `Errore HTTP: ${response.status}`;
+                    throw new Error(error);
+                }
+                
+                // Show confirmation message to user
+                alert("Documento aggiunto al progetto attivo con successo!");
+                
+            } catch (err) {
+                error = err.message;
+                alert("Errore nell'aggiungere il documento al progetto: " + error);
+            }
         }
     }
 
     async function search_norme(){
-        doc_IDs = [];
-        error = "";
-        analisi = false;
-        GetDocsLoading = true;
-        let payload = {
-            query: question,
-            articolo: art,
-            codice: [""],
-            top_k: "10"
-        }
-        if(codice != "all"){
-            payload.codice = [codice];
-        } else {
-            payload.codice = ["cp", "cc", "cpc", "cpp"];
-        }
-        try{
-            const response = await fetch(`search/norme/`,
-            {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify(payload)
-            });
-            console.log(payload);
-            if (!response.ok) {
-                throw new Error(`Errore HTTP: ${response.status}`);          
+        const authHeader = sessionStorage.getItem('authHeader');
+        if(authHeader != null){
+            doc_IDs = [];
+            error = "";
+            analisi = false;
+            GetDocsLoading = true;
+            let payload = {
+                query: question,
+                articolo: art,
+                codice: [""],
+                top_k: "10"
             }
-            normeResults = await response.json();
-        }catch(err){
-            error = err.message;
-        } finally {
-            GetDocsLoading = false;
+            if(codice != "all"){
+                payload.codice = [codice];
+            } else {
+                payload.codice = ["cp", "cc", "cpc", "cpp"];
+            }
+            try{
+                const response = await fetch(`search/norme/`,
+                {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': authHeader
+                    },
+                    body: JSON.stringify(payload)
+                });
+                console.log(payload);
+                if (!response.ok) {
+                    throw new Error(`Errore HTTP: ${response.status}`);          
+                }
+                normeResults = await response.json();
+            }catch(err){
+                error = err.message;
+            } finally {
+                GetDocsLoading = false;
+            }
         }
     }
 
-    async function analysis(id: number){
-        error = "";
-        analisi = true;
-        reasoningLoading = true;
-        analysis_text = "";
-        let analysisResponse;
-        let ids=[id];
-        let payload = {"document_ids": ids};
-        try {
-            const response = await fetch(`search/sentenze/analysis`,
-            {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify(payload)
-            });
-            if (!response.ok) {
-                throw new Error(`Errore HTTP: ${response.status}`);          
-            }
-            responseData = await response.json();
-            analysisResponse = responseData.analysis;
-            analysis_text = '<h3 class="text-lg font-bold mb-2">' + documents[id].title + '</h3>';
-            analysis_text += "<b>PAROLE CHIAVE</b><br>";
-            let keywords:string[] = analysisResponse.keywords.split(',');
-            for(let i = 0; i<keywords.length; i++){
-                keywords[i] = keywords[i].replace(/[{}"]/g, '');
-            }
-            analysis_text += '<div class="flex flex-wrap">'
-            keywords.forEach(key => {
-                analysis_text += '<div class="bg-warning m-2 py-2 px-4 text-black rounded-box font-semibold uppercase shadow-xl">' + key + '</div>'
-            });
-            analysis_text += '</div>'
-            analysis_text += "<b>SOMMARIO</b><br>" + analysisResponse.summary +'<br>';
-            chat_history = responseData.chat_history;
-            //console.log(chat_history);
-        } catch (err) {
-            error = err.message;
+    async function analysis(id:number){
+        const authHeader = sessionStorage.getItem("authHeader");
+        if(authHeader != null){
+            error = "";
+            analisi = true;
+            reasoningLoading = true;
             analysis_text = "";
-        } finally {
-            reasoningLoading = false;
+            let analysisResponse;
+            let ids=[id];
+            let payload = {"document_ids": ids};
+            try {
+                const response = await fetch(`search/sentenze/analysis`,
+                {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': authHeader
+                    },
+                    body: JSON.stringify(payload)
+                });
+                if (!response.ok) {
+                    throw new Error(`Errore HTTP: ${response.status}`);          
+                }
+                responseData = await response.json();
+                analysisResponse = responseData.analysis;
+                analysis_text = '<h3 class="text-lg font-bold mb-2">' + documents[id].title + '</h3>';
+                analysis_text += "<b>PAROLE CHIAVE</b><br>";
+                let keywords:string[] = analysisResponse.keywords.split(',');
+                for(let i = 0; i<keywords.length; i++){
+                    keywords[i] = keywords[i].replace(/[{}"]/g, '');
+                }
+                analysis_text += '<div class="flex flex-wrap">'
+                keywords.forEach(key => {
+                    analysis_text += '<div class="bg-warning m-2 py-2 px-4 text-black rounded-box font-semibold uppercase shadow-xl">' + key + '</div>'
+                });
+                analysis_text += '</div>'
+                analysis_text += "<b>SOMMARIO</b><br>" + analysisResponse.summary +'<br>';
+                chat_history = responseData.chat_history;
+                //console.log(chat_history);
+            } catch (err) {
+                error = err.message;
+                analysis_text = "";
+            } finally {
+                reasoningLoading = false;
+            }
         }
     }
 
     async function rerank(){
-        error = "";
-        rerankLoading = true;
-        let payload = {"document_ids": doc_IDs};
-        try {
-            const response = await fetch(`/search/sentenze/reranker?question=${question}&k=5`,
-            {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify(payload)
-            });
-            if (!response.ok) {
-                error = `Errore HTTP: ${response.status}`;
-                throw new Error(error);
+        const authHeader = sessionStorage.getItem('authHeader');
+        if(authHeader != null){
+            error = "";
+            rerankLoading = true;
+            let payload = {"document_ids": doc_IDs};
+            try {
+                const response = await fetch(`/search/sentenze/reranker?question=${question}&k=5`,
+                {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': authHeader
+                    },
+                    body: JSON.stringify(payload)
+                });
+                if (!response.ok) {
+                    error = `Errore HTTP: ${response.status}`;
+                    throw new Error(error);
+                }
+                responseData = await response.json();
+                if(responseData != null){
+                    doc_IDs = responseData.document_ids;
+                }
+            } catch (err) {
+                error = err.message;
+            } finally{
+                rerankLoading = false;
             }
-            responseData = await response.json();
-            if(responseData != null){
-                doc_IDs = responseData.document_ids;
-            }
-        } catch (err) {
-            error = err.message;
-        } finally{
-            rerankLoading = false;
         }
     }
 
-    async function get_document_info(document_id: number){
+    async function get_document_info(document_id: number, authHeader:string){
         try {
-            const response = await fetch(`/search/document/${document_id}`);
+            const response = await fetch(`/search/document/${document_id}`,{
+                headers:{'Authorization': authHeader}
+            });
             if (!response.ok) {
                 return {
                     ok: false,
@@ -211,40 +244,45 @@
     }
     
     async function get_documents(){
-        error = "";
-        GetDocsLoading = true;
-        analisi = false;
-        normeResults = [];
-        try {
-            const response = await fetch(`/search/sentenze/documents?question=${question}&k=15`);
-            if (!response.ok) {
-                error = `Errore HTTP: ${response.status}`;
-                throw new Error(error);
-            }
-            responseData = await response.json();
-            if(responseData != null){
-                doc_IDs = responseData.document_ids;
-                documents = {};
-            for(let i=0; i< doc_IDs.length; i++){
-                let id = doc_IDs[i];
-                let docInfo = await get_document_info(id);
-                if(docInfo.ok){
-                    let text = docInfo.description.split('\n');
-                    let keywords_list = docInfo.keywords.split(',');
-                    for(let i = 0; i<keywords_list.length; i++){
-                        keywords_list[i] = keywords_list[i].replace(/[{}"]/g, '');
-                    }
-                    documents[id] = {title: text[0], massima: docInfo.massima, keywords: keywords_list, url: docInfo.url};
-                } else {
-                    documents[id] = {title: 'ERRORE', massima: 'Errore nell\'ottenimento delle informazioni di questo documento',keywords: '', url: ''}
+        const authHeader = sessionStorage.getItem('authHeader');
+        if(authHeader != null){
+            error = "";
+            GetDocsLoading = true;
+            analisi = false;
+            normeResults = [];
+            try {
+                const response = await fetch(`/search/sentenze/documents?question=${question}&k=15`,{
+                    headers:{'Authorization': authHeader}
+                });
+                if (!response.ok) {
+                    error = `Errore HTTP: ${response.status}`;
+                    throw new Error(error);
                 }
+                responseData = await response.json();
+                if(responseData != null){
+                    doc_IDs = responseData.document_ids;
+                    documents = {};
+                for(let i=0; i< doc_IDs.length; i++){
+                    let id = doc_IDs[i];
+                    let docInfo = await get_document_info(id, authHeader);
+                    if(docInfo.ok){
+                        let text = docInfo.description.split('\n');
+                        let keywords_list = docInfo.keywords.split(',');
+                        for(let i = 0; i<keywords_list.length; i++){
+                            keywords_list[i] = keywords_list[i].replace(/[{}"]/g, '');
+                        }
+                        documents[id] = {title: text[0], massima: docInfo.massima, keywords: keywords_list, url: docInfo.url};
+                    } else {
+                        documents[id] = {title: 'ERRORE', massima: 'Errore nell\'ottenimento delle informazioni di questo documento',keywords: '', url: ''}
+                    }
+                }
+                //console.log(documents);
+                }
+            } catch (err) {
+                error = err.message;
+            } finally {
+                GetDocsLoading = false;
             }
-            //console.log(documents);
-            }
-        } catch (err) {
-            error = err.message;
-        } finally {
-            GetDocsLoading = false;
         }
     }
 </script>

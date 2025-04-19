@@ -23,9 +23,12 @@
           {#if $page.url.pathname === '/search'}
             <li><a href="/app">Chatbot</a></li>
             <li><a href="/search">Ricerca</a></li>
-          {:else}
+          {:else if $page.url.pathname === "/"}
             <li><a href="#chi-siamo">Chi siamo</a></li>
             <li><a href="#demo">Demo</a></li>
+            <li><a href="/login">Accedi</a></li>
+          {:else}
+            <li><a href="/">Home</a></li>
           {/if}
         </ul>
       </div>
@@ -36,9 +39,12 @@
         {#if $page.url.pathname === '/search'}
             <li class="font-bold mx-2"><a href="/app">Chatbot</a></li>
             <li class="font-bold mx-2"><a href="/search">Ricerca</a></li>
-        {:else}
+        {:else if $page.url.pathname === "/"}
             <li><a class="font-bold mx-2" href="#chi-siamo">Chi siamo</a></li>
             <li><a class="font-bold mx-2" href="#demo">Demo</a></li>
+            <li><a class="font-bold mx-2" href="/login">Accedi</a></li>
+        {:else}
+            <li><a class="font-bold mx-2" href="/">Home</a></li>
         {/if}  
       </ul>
     </div>

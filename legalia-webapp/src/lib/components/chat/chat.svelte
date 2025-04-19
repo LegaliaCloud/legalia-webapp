@@ -1,6 +1,6 @@
 <script lang="ts">
-  import UserMsg from "./user-msg.svelte";
-  import ChatbotMsg from "./chatbot-msg.svelte";
+  import UserMsg from "./userMsg.svelte";
+  import ChatbotMsg from "./chatbotMsg.svelte";
   import NewChatIcon from "../misc/newChatIcon.svelte";
   import Sendicon from "../misc/sendicon.svelte";
   import Paperclipicon from "../misc/paperclipicon.svelte";

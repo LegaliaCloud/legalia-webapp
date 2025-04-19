@@ -1,6 +1,6 @@
 <script>
     import '../app.css';
-    import Navbar from '$lib/components/navbar/navbar_1.svelte';
+    import Navbar from '$lib/components/navbar/navbar1.svelte';
     import BetaTesterForm from '$lib/components/betaTesterForm/betaTesterForm.svelte';
     import { onMount } from 'svelte';
     import Hero from '$lib/components/hero/hero.svelte';
