@@ -4,7 +4,7 @@
     import BetaTesterForm from '$lib/components/betaTesterForm/betaTesterForm.svelte';
     import { onMount } from 'svelte';
     import Hero from '$lib/components/hero/hero.svelte';
-    import MyParticles from '$lib/components/particles/my-particles.svelte';
+    import MyParticles from '$lib/components/particles/myParticles.svelte';
     import Stats from '$lib/components/stats/stats.svelte';
 
     // Dati per i messaggi della chat

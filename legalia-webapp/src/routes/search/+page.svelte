@@ -1,7 +1,7 @@
 <script lang="ts">
     import '../../app.css';
     import Navbar from '$lib/components/navbar/navbar1.svelte';
-    import Fileicon from '$lib/components/misc/fileicon-lg.svelte';
+    import Fileicon from '$lib/components/misc/fileiconLg.svelte';
     import ChatDemo from '$lib/components/chat/chatDemo.svelte';
     import { onMount} from "svelte";
     import type { Norma } from "$lib/components/researchResult/researchModule.svelte";

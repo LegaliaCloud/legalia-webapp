@@ -1,5 +1,5 @@
 <script lang="ts">
-    import Searchicon from "../misc/searchicon.svelte";
+    import Searchicon from "../misc/searchIcon.svelte";
     import ResultSentenza from "./resultSentenza.svelte";
     import NormaResult from "./normaResult.svelte";
     import { sentenze, norme } from "../projects/projectsModule.svelte";

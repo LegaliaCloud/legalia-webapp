@@ -1,5 +1,5 @@
 <script lang="ts">
-	import Dotsicon from "../misc/dotsicon.svelte";
+	import Dotsicon from "../misc/dotsIcon.svelte";
   import { project_toggle } from "../projects/projectsModule.svelte";
 
   export let id:number;

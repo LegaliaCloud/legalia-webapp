@@ -2,11 +2,11 @@
   import UserMsg from "./userMsg.svelte";
   import ChatbotMsg from "./chatbotMsg.svelte";
   import NewChatIcon from "../misc/newChatIcon.svelte";
-  import Sendicon from "../misc/sendicon.svelte";
-  import Paperclipicon from "../misc/paperclipicon.svelte";
-  import Removeatteachedicon from "../misc/removeatteachedicon.svelte";
-  import Reporticon from "../misc/reporticon.svelte";
-  import Shildicon from "../misc/shildicon.svelte";
+  import Sendicon from "../misc/sendIcon.svelte";
+  import Paperclipicon from "../misc/paperclipIcon.svelte";
+  import Removeatteachedicon from "../misc/removeAtteachedIcon.svelte";
+  import Reporticon from "../misc/reportIcon.svelte";
+  import Shildicon from "../misc/shildIcon.svelte";
   import { dateFormat } from "../misc/usefulFunctions.svelte";
   import { files } from "../fileexplorer/filesModule.svelte";
   import { chat_all, chat_history } from "./chatHistoryModule.svelte";
