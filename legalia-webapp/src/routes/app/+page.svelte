@@ -1,9 +1,9 @@
 <script lang="ts">
     import '../../app.css';
-	import Navbar from '$lib/components/navbar/navbar.svelte';
-	import Sidebar from '$lib/components/sidebar/sidebar.svelte';
-    import Chat from '$lib/components/chat/chat.svelte';
-	import ResearchResults from '$lib/components/researchResult/researchResultsSidebar.svelte';
+	import Navbar from '$lib/components/navbar/Navbar.svelte';
+	import Sidebar from '$lib/components/sidebar/Sidebar.svelte';
+    import Chat from '$lib/components/chat/Chat.svelte';
+	import ResearchResults from '$lib/components/researchresult/ResearchResultsSidebar.svelte';
 	import {goto} from '$app/navigation';
 	import { onMount } from 'svelte';
 

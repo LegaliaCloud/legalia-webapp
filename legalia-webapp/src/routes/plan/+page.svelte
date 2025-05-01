@@ -1,8 +1,8 @@
 <script>
     import '../../app.css';
-    import Sidebar from '$lib/components/sidebar/sidebar.svelte';
-    import Navbar from '$lib/components/navbar/navbar.svelte';
-    import Plan from '$lib/components/plan/plan.svelte';
+    import Sidebar from '$lib/components/sidebar/Sidebar.svelte';
+    import Navbar from '$lib/components/navbar/Navbar.svelte';
+    import Plan from '$lib/components/plan/Plan.svelte';
     import {onMount} from 'svelte';
     import {goto} from '$app/navigation';
 

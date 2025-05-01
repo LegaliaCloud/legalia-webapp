@@ -1,4 +1,6 @@
 <script>
+// @ts-nocheck
+
     import Particles, { particlesInit } from '@tsparticles/svelte';
     import { loadFull } from "tsparticles"; // if you are going to use `loadFull`, install the "tsparticles" package too.
 
@@ -25,7 +27,7 @@
         }
     };
 
-    let onParticlesLoaded = (event) => {
+    let onParticlesLoaded = (/** @type {{ detail: { particles: any; }; }} */ event) => {
         const particlesContainer = event.detail.particles;
 
         // you can use particlesContainer to call all the Container class

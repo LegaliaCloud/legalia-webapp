@@ -1,7 +1,7 @@
 <script lang="ts">
     import '../../app.css';
-    import MyParticles from '$lib/components/particles/myParticles.svelte';
-    import Navbar from '$lib/components/navbar/navbar1.svelte';
+    import MyParticles from '$lib/components/particles/MyParticles.svelte';
+    import Navbar from '$lib/components/navbar/Navbar1.svelte';
     import {goto} from '$app/navigation';
 	import { onMount } from 'svelte';
 

@@ -1,17 +1,17 @@
 <script lang="ts">
-  import UserMsg from "./userMsg.svelte";
-  import ChatbotMsg from "./chatbotMsg.svelte";
-  import NewChatIcon from "../misc/newChatIcon.svelte";
-  import Sendicon from "../misc/sendIcon.svelte";
-  import Paperclipicon from "../misc/paperclipIcon.svelte";
-  import Removeatteachedicon from "../misc/removeAtteachedIcon.svelte";
-  import Reporticon from "../misc/reportIcon.svelte";
-  import Shildicon from "../misc/shildIcon.svelte";
-  import { dateFormat } from "../misc/usefulFunctions.svelte";
-  import { files } from "../fileexplorer/filesModule.svelte";
-  import { chat_all, chat_history } from "./chatHistoryModule.svelte";
-  import { sentenze, norme } from "../projects/projectsModule.svelte";
-  import { decodeCodici } from "../researchResult/researchModule.svelte";
+  import UserMsg from "./UserMsg.svelte";
+  import ChatbotMsg from "./ChatbotMsg.svelte";
+  import NewChatIcon from "../misc/NewChatIcon.svelte";
+  import Sendicon from "../misc/SendIcon.svelte";
+  import Paperclipicon from "../misc/PaperClipIcon.svelte";
+  import Removeatteachedicon from "../misc/RemoveAttachedIcon.svelte";
+  import Reporticon from "../misc/ReportIcon.svelte";
+  import Shildicon from "../misc/ShildIcon.svelte";
+  import { dateFormat } from "../misc/UsefulFunctions.svelte";
+  import { files } from "../fileexplorer/FilesModule.svelte";
+  import { chat_all, chat_history } from "./ChatHistoryModule.svelte";
+  import { sentenze, norme } from "../projects/ProjectsModule.svelte";
+  import { decodeCodici } from "../researchresult/ResearchModule.svelte";
   import { afterUpdate } from 'svelte';
   import { onMount } from "svelte";
 	import { marked } from "marked";
@@ -46,7 +46,7 @@
 
   let context:string="";
   let difense_lines:string = "";
-  let customRequestModal;
+  let customRequestModal: HTMLDialogElement;
 
   function indexOfChat(chat_id:number){
         let index = -1;
@@ -168,7 +168,7 @@
             throw new Error(error);
         }
         let responseData = await response.json();
-        responseData.messages.forEach(message=>{
+        responseData.messages.forEach((message: { sender: string; text: any; })=>{
           let msgSender:number=-1;
           if(message.sender == 'assistant'){
             msgSender = 0;
@@ -213,7 +213,7 @@
           active_chat = responseData.chat_id;
           chat_title = "Nuova Chat";
           chat_all();
-        }catch (err){
+        }catch (err: any){
           console.log(err.message);
           chatbot_msg = "Qualcosa è andato storto! Riprova.";
           chat = [...chat, {sender: 0, text: chatbot_msg}];
@@ -241,7 +241,7 @@
           atteached.norme_ids = [];
           atteached.sentenze_ids = [];
           atteached.file_ids = [];
-        } catch (err){
+        } catch (err: any){
           console.log(err.message);
           chatbot_msg = "Troppe richieste! Riprova.";
         } finally {
@@ -276,7 +276,7 @@
 
   onMount(chat_all);
 
-  let chat_container, atteachedModal, generateDefenseModal, defenseResultModal;
+  let chat_container: HTMLDivElement, atteachedModal: HTMLDialogElement, generateDefenseModal: HTMLDialogElement, defenseResultModal: HTMLDialogElement;
   // Funzione per scorrere automaticamente alla fine della chat
   function scrollToBottom() {
       if (chat_container) {
@@ -293,8 +293,8 @@
 <div class="mx-8 px-3 py-4 rounded-box" style="height: 72%; background: linear-gradient(170deg, #3b0764 30%, #712da4);">
   <div class="relative h-full">
     <div class="absolute top-0 left-0 z-[10]">
-      <button on:click={customRequestModal.showModal()} class="btn rounded-full my-1 bg-transparent border-transparent tooltip capitalize text-white hover:bg-green-400 hover:border-green-400" data-tip="Genera report chat"><Reporticon /></button>      <br>
-      <button on:click={generateDefenseModal.showModal()} class="btn rounded-full my-1 bg-transparent border-transparent tooltip capitalize text-white hover:bg-green-400 hover:border-green-400" data-tip="Genera linee difensive"><Shildicon /></button>
+      <button on:click={()=>customRequestModal.showModal()} class="btn rounded-full my-1 bg-transparent border-transparent tooltip capitalize text-white hover:bg-green-400 hover:border-green-400" data-tip="Genera report chat"><Reporticon /></button>      <br>
+      <button on:click={()=>generateDefenseModal.showModal()} class="btn rounded-full my-1 bg-transparent border-transparent tooltip capitalize text-white hover:bg-green-400 hover:border-green-400" data-tip="Genera linee difensive"><Shildicon /></button>
     </div>
     <div bind:this={chat_container} class="absolute top-2 overflow-y-auto px-1" style="width: 100%; height:80%;">
       {#if chat.length == 0}
@@ -333,7 +333,7 @@
     <div class="absolute bottom-0 w-full">
       <div class = "w-full grid grid-cols-12 gap-2 mt-3">
         <div class="col-span-1 text-center">
-          <button on:click={atteachedModal.showModal()} class="btn border-green-200 bg-green-200 text-black rounded-full hover:text-white hover:bg-green-400 hover:border-green-400 relative">
+          <button on:click={()=>atteachedModal.showModal()} class="btn border-green-200 bg-green-200 text-black rounded-full hover:text-white hover:bg-green-400 hover:border-green-400 relative">
             <Paperclipicon />
             {#if (atteached.norme_ids.length + atteached.sentenze_ids.length + atteached.file_ids.length) > 0}
               <div class="badge badge-secondary absolute top-0 right-0">{atteached.norme_ids.length + atteached.sentenze_ids.length + atteached.file_ids.length}</div>
@@ -348,7 +348,7 @@
           {/if}
         </div>
         <div class="col-span-1 text-center">
-          <button on:click={use_chat(user_message)} class="btn border-green-200 bg-green-200 text-black rounded-full hover:text-white hover:bg-green-400 hover:border-green-400"><Sendicon/></button>
+          <button on:click={()=>use_chat(user_message)} class="btn border-green-200 bg-green-200 text-black rounded-full hover:text-white hover:bg-green-400 hover:border-green-400"><Sendicon/></button>
         </div>   
       </div>
     </div>
@@ -364,7 +364,7 @@
               <p class="font-bold">{chat.title}</p>
               <p class="text-sm">{dateFormat(chat.last_update)}</p>
               <div class="py-1">
-                  <button on:click={load_chat(chat.chat_id)} class="btn btn-sm capitalize bg-green-200 border-green-200 text-black rounded-full hover:text-white hover:bg-green-400 hover:border-green-400">Carica</button>
+                  <button on:click={()=>load_chat(chat.chat_id)} class="btn btn-sm capitalize bg-green-200 border-green-200 text-black rounded-full hover:text-white hover:bg-green-400 hover:border-green-400">Carica</button>
               </div>          
           </div>
       </div>
@@ -411,9 +411,9 @@
               {#each filesList as file}
                   <div class="flex gap-2 my-2">
                     {#if !atteached.file_ids.includes(file.id)}
-                      <div><button on:click={allega(2, file.id)} class="btn btn-xs bg-purple-950 border-purple-950 text-white capitalize tooltip" data-tip="Allega"><Paperclipicon /></button></div>
+                      <div><button on:click={()=>allega(2, file.id)} class="btn btn-xs bg-purple-950 border-purple-950 text-white capitalize tooltip" data-tip="Allega"><Paperclipicon /></button></div>
                     {:else}
-                      <div><button on:click={rimuovi_allegato(2, file.id)} class="btn btn-xs btn-error text-white capitalize tooltip" data-tip="Rimuovi allegato"><Removeatteachedicon /></button></div>
+                      <div><button on:click={()=>rimuovi_allegato(2, file.id)} class="btn btn-xs btn-error text-white capitalize tooltip" data-tip="Rimuovi allegato"><Removeatteachedicon /></button></div>
                     {/if}
                     <div class="py-auto"><p class="font-bold text-sm">{file.name}</p></div>
                   </div>
@@ -434,9 +434,9 @@
               {#each normeList as norma}
                   <div class="flex gap-2 my-2">
                     {#if !atteached.norme_ids.includes(norma.id)}
-                      <div><button on:click={allega(0, norma.id)} class="btn btn-xs bg-purple-950 border-purple-950 text-white capitalize tooltip" data-tip="Allega"><Paperclipicon /></button></div>
+                      <div><button on:click={()=>allega(0, norma.id)} class="btn btn-xs bg-purple-950 border-purple-950 text-white capitalize tooltip" data-tip="Allega"><Paperclipicon /></button></div>
                     {:else}
-                      <div><button on:click={rimuovi_allegato(0, norma.id)} class="btn btn-xs btn-error text-white capitalize tooltip" data-tip="Rimuovi allegato"><Removeatteachedicon /></button></div>
+                      <div><button on:click={()=>rimuovi_allegato(0, norma.id)} class="btn btn-xs btn-error text-white capitalize tooltip" data-tip="Rimuovi allegato"><Removeatteachedicon /></button></div>
                     {/if}
                     <div class="py-auto"><p class="font-bold text-sm">Art {norma.articolo} {decodeCodici[norma.codice]}</p></div>
                   </div>
@@ -456,10 +456,10 @@
             {#if sentenzeList.length > 0}
               {#each sentenzeList as sentenza}
                   <div class="flex gap-2 my-2">
-                    {#if !atteached.sentenze_ids.includes(sentenza.position_index)}
-                      <div><button on:click={allega(1, sentenza.position_index)} class="btn btn-xs bg-purple-950 border-purple-950 text-white capitalize tooltip" data-tip="Allega"><Paperclipicon /></button></div>
+                    {#if !atteached.sentenze_ids.includes(sentenza.positionIndex)}
+                      <div><button on:click={()=>allega(1, sentenza.positionIndex)} class="btn btn-xs bg-purple-950 border-purple-950 text-white capitalize tooltip" data-tip="Allega"><Paperclipicon /></button></div>
                     {:else}
-                      <div><button on:click={rimuovi_allegato(1, sentenza.position_index)} class="btn btn-xs btn-error text-white capitalize tooltip" data-tip="Rimuovi allegato"><Removeatteachedicon /></button></div>
+                      <div><button on:click={()=>rimuovi_allegato(1, sentenza.positionIndex)} class="btn btn-xs btn-error text-white capitalize tooltip" data-tip="Rimuovi allegato"><Removeatteachedicon /></button></div>
                     {/if}
                     <div class="py-auto"><p class="font-bold text-sm">{sentenza.description.split(" \n")[0]}</p></div>
                   </div>

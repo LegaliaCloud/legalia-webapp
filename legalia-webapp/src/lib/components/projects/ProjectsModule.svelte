@@ -1,7 +1,7 @@
 <script lang="ts" context="module">
     import { writable } from "svelte/store";
-    import { chat_all } from "../chat/chatHistoryModule.svelte";
-    import type { Sentenza, Norma } from "../researchResult/researchModule.svelte";
+    import { chat_all } from "../chat/ChatHistoryModule.svelte";
+    import type { Sentenza, Norma } from "../researchresult/ResearchModule.svelte";
 
     interface Project{
         id:number,

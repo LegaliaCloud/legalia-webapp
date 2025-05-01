@@ -1,8 +1,8 @@
 <script lang="ts">
-    import Fileicon from "../misc/fileicon.svelte";
+    import Fileicon from "../misc/FileIcon.svelte";
 	//import Foldericon from "../misc/foldericon.svelte";
     import { onMount } from "svelte";
-    import {files, get_files} from "./filesModule.svelte";
+    import {files, get_files} from "./FilesModule.svelte";
     $: filesList = $files;
 
     onMount(get_files);

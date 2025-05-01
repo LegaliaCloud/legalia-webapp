@@ -1,6 +1,6 @@
 <script lang="ts">
-	import Dotsicon from "../misc/dotsIcon.svelte";
-  import { project_toggle } from "../projects/projectsModule.svelte";
+	import Dotsicon from "../misc/DotsIcon.svelte";
+  import { project_toggle } from "./ProjectsModule.svelte";
 
   export let id:number;
   export let projectname: string;
@@ -23,7 +23,7 @@ class="w-full flex items-center rounded-lg border-l-4 transition-colors duration
       <ul class="dropdown-content menu shadow bg-purple-200 rounded-box w-44 z-[2]">
         <li><p class="text-purple-950 hover:text-purple-100 hover:bg-purple-800">Rinomina progetto</p></li>
         {#if !active}
-          <li><button on:click={project_toggle(id)} class="text-purple-950 hover:text-purple-100  hover:bg-purple-800">Attiva progetto</button></li>
+          <li><button on:click={()=>project_toggle(id)} class="text-purple-950 hover:text-purple-100  hover:bg-purple-800">Attiva progetto</button></li>
         {/if}
         <li><button class="btn btn-error text-center align-middle">Elimina progetto</button></li>
       </ul>

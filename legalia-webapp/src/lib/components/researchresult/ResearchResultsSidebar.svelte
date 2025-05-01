@@ -1,8 +1,8 @@
 <script lang="ts">
-    import Searchicon from "../misc/searchIcon.svelte";
-    import ResultSentenza from "./resultSentenza.svelte";
-    import NormaResult from "./normaResult.svelte";
-    import { sentenze, norme } from "../projects/projectsModule.svelte";
+    import Searchicon from "../misc/SearchIcon.svelte";
+    import ResultSentenza from "./ResultSentenza.svelte";
+    import NormaResult from "./NormaResult.svelte";
+    import { sentenze, norme } from "../projects/ProjectsModule.svelte";
 
     $:sentenzeList = $sentenze;
     $:normeList = $norme;

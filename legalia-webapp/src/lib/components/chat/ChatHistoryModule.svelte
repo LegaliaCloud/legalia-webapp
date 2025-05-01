@@ -40,7 +40,7 @@
                     throw new Error(error);
                 }
                 let responseData = await response.json();
-                responseData.forEach(chat => {
+                responseData.forEach((chat: { id: any; title: any; project_id: any; updated_at: any; }) => {
                     history=[...history,{
                         chat_id: chat.id,
                         title: chat.title,
@@ -50,7 +50,7 @@
                 });
                 sort_history(history);
                 chat_history.set(history);
-            } catch(err){
+            } catch(err: any){
                 console.log(err.message);
             }
         }

@@ -1,6 +1,6 @@
 <script lang="ts">
-  import type { Sentenza } from "./researchModule.svelte";
-  import { dateFormat } from "../misc/usefulFunctions.svelte";
+  import type { Sentenza } from "./ResearchModule.svelte";
+  import { dateFormat } from "../misc/UsefulFunctions.svelte";
 
   export let sentenza:Sentenza;
   //let sentenzaContentModal;

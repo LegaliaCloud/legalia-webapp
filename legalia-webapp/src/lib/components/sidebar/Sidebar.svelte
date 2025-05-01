@@ -1,16 +1,17 @@
 <script lang="ts">
-	import Fileexplorer from "../fileexplorer/fileexplorer.svelte";
-	import Projectitem from "../projects/projectItem.svelte";
+	import Fileexplorer from "../fileexplorer/FileExplorer.svelte";
+	import Projectitem from "../projects/ProjectItem.svelte";
   import { onMount } from "svelte";
-  import { get_files } from "../fileexplorer/filesModule.svelte";
-  import { projects, get_projects} from "../projects/projectsModule.svelte";
+  import { get_files } from "../fileexplorer/FilesModule.svelte";
+  import { projects, get_projects} from "../projects/ProjectsModule.svelte";
+	import { json } from "@sveltejs/kit";
   
   $: projects_list = $projects;
   let newProjectName = "", newProjectClient = "", newProjectDesc = "";
-  let create_project_form;
+  let create_project_form: HTMLDialogElement;
 
-  let newFile;
-  let uploadModal;
+  let newFile: string | Blob;
+  let uploadModal: HTMLDialogElement;
 
   async function create_project(name:string, desc:string, client:string){
     const authHeader = sessionStorage.getItem("authHeader");
@@ -90,7 +91,7 @@
     </ul>
   </div>
   <div class="flex justify-center my-2">
-    <button class="btn btn-sm btn-warning rounded-full" on:click={create_project_form.showModal()}>+</button>
+    <button class="btn btn-sm btn-warning rounded-full" on:click={()=>create_project_form.showModal()}>+</button>
   </div>
 
   <!-- Separator Line -->
@@ -101,7 +102,7 @@
   </div>
 
   <div class="flex justify-center my-2">
-    <button class="btn btn-sm btn-warning rounded-full" on:click={uploadModal.showModal()}>+</button>
+    <button class="btn btn-sm btn-warning rounded-full" on:click={()=>uploadModal.showModal()}>+</button>
   </div>
 </div>
 
@@ -124,7 +125,7 @@
     <div class="text-center">
       <form method="dialog">
         <!-- if there is a button in form, it will close the modal -->
-        <button on:click={create_project(newProjectName, newProjectDesc, newProjectClient)} class="btn bg-purple-950 text-white capitalize">Crea progetto</button>
+        <button on:click={()=>create_project(newProjectName, newProjectDesc, newProjectClient)} class="btn bg-purple-950 text-white capitalize">Crea progetto</button>
       </form>
     </div>
   </div>

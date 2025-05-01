@@ -1,14 +1,14 @@
 <script lang="ts">
-    import UserMsg from "./userMsg.svelte";
-    import ChatbotMsg from "./chatbotMsg.svelte";
+    import UserMsg from "./UserMsg.svelte";
+    import ChatbotMsg from "./ChatbotMsg.svelte";
     import { afterUpdate } from 'svelte';
 
-    export let chat_history_payload;
+    export let chat_history_payload:JSON;
     export let first_msg:string = '';
     
     let user_message:string;
     let loading:boolean;
-    let chat_container;
+    let chat_container: HTMLDivElement;
 
     interface Message {
         sender:number, // 0 = ChatBot | 1 = User 
@@ -81,7 +81,7 @@
               <input type="text" bind:value={user_message} placeholder="Type here" class="input input-md input-bordered w-full bg-white text-black rounded-full" />
           </div>
           <div class="md:col-span-1 col-span-2">
-              <button on:click={chat(user_message)} class="btn w-full bg-green-500 border-green-500 text-white hover:bg-green-400 hover:border-green-400 text-xs rounded-full">Invia</button>
+              <button on:click={()=>chat(user_message)} class="btn w-full bg-green-500 border-green-500 text-white hover:bg-green-400 hover:border-green-400 text-xs rounded-full">Invia</button>
           </div>     
         </div>
     </div>

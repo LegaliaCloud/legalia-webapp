@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { decodeCodici, type Norma } from "./researchModule.svelte";
+  import { decodeCodici, type Norma } from "./ResearchModule.svelte";
   
   export let norma: Norma;
   

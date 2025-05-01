@@ -1,13 +1,13 @@
 <script lang="ts">
     import '../../app.css';
-    import Navbar from '$lib/components/navbar/navbar1.svelte';
-    import Fileicon from '$lib/components/misc/fileiconLg.svelte';
-    import ChatDemo from '$lib/components/chat/chatDemo.svelte';
+    import Navbar from '$lib/components/navbar/Navbar1.svelte';
+    import Fileicon from '$lib/components/misc/FileIconLg.svelte';
+    import ChatDemo from '$lib/components/chat/ChatDemo.svelte';
     import { onMount} from "svelte";
-    import type { Norma } from "$lib/components/researchResult/researchModule.svelte";
-    import { decodeCodici } from "$lib/components/researchResult/researchModule.svelte";
+    import type { Norma } from "$lib/components/researchresult/ResearchModule.svelte";
+    import { decodeCodici } from "$lib/components/researchresult/ResearchModule.svelte";
     import { goto } from '$app/navigation';
-    import Hero from '$lib/components/hero/hero.svelte';
+    import Hero from '$lib/components/hero/Hero.svelte';
 
     let question: string = "";
     let lookFor: boolean; //false = sentenze | true = norme
@@ -26,7 +26,7 @@
 
     let documents:Documents = {};
     let analysis_text: string = "";
-    let chat_history;
+    let chat_history: any;
     let responseData = null;
     let error:string = "";
 
@@ -88,7 +88,7 @@
                 // Show confirmation message to user
                 alert("Documento aggiunto al progetto attivo con successo!");
                 
-            } catch (err) {
+            } catch (err: any) {
                 error = err.message;
                 alert("Errore nell'aggiungere il documento al progetto: " + error);
             }
@@ -128,7 +128,7 @@
                     throw new Error(`Errore HTTP: ${response.status}`);          
                 }
                 normeResults = await response.json();
-            }catch(err){
+            }catch(err: any){
                 error = err.message;
             } finally {
                 GetDocsLoading = false;
@@ -175,7 +175,7 @@
                 analysis_text += "<b>SOMMARIO</b><br>" + analysisResponse.summary +'<br>';
                 chat_history = responseData.chat_history;
                 //console.log(chat_history);
-            } catch (err) {
+            } catch (err: any) {
                 error = err.message;
                 analysis_text = "";
             } finally {
@@ -208,7 +208,7 @@
                 if(responseData != null){
                     doc_IDs = responseData.document_ids;
                 }
-            } catch (err) {
+            } catch (err: any) {
                 error = err.message;
             } finally{
                 rerankLoading = false;
@@ -235,7 +235,7 @@
                 'massima': responseData.massima,
                 'keywords': responseData.keywords
             };
-        } catch (err) {
+        } catch (err: any) {
             return {
                 ok: false,
                 error: err.message
@@ -273,12 +273,12 @@
                         }
                         documents[id] = {title: text[0], massima: docInfo.massima, keywords: keywords_list, url: docInfo.url};
                     } else {
-                        documents[id] = {title: 'ERRORE', massima: 'Errore nell\'ottenimento delle informazioni di questo documento',keywords: '', url: ''}
+                        documents[id] = {title: 'ERRORE', massima: 'Errore nell\'ottenimento delle informazioni di questo documento', keywords: [''], url: ''}
                     }
                 }
                 //console.log(documents);
                 }
-            } catch (err) {
+            } catch (err: any) {
                 error = err.message;
             } finally {
                 GetDocsLoading = false;
@@ -313,7 +313,7 @@
                             <div>
                                 <p class="mb-2 ml-1 text-black">Ricerca una norma specifica</p>
                                 <div class="flex gap-2">
-                                    <select bind:value={codice} on:change={console.log(codice)} class="select border-neutral-300 border-2 bg-white font-roboto">
+                                    <select bind:value={codice} on:change={()=>console.log(codice)} class="select border-neutral-300 border-2 bg-white font-roboto">
                                         <option value="all"disabled selected>Codice</option>
                                         <option value="cp">Codice Penale</option>
                                         <option value="cc">Codice Civile</option>
@@ -333,7 +333,7 @@
                                         <div class="flex">
                                             <p class="text-black mr-2">Stai cercando le</p>
                                             <label class="swap"> 
-                                                <input bind:checked={lookFor} on:change={codice = "all"} type="checkbox" />
+                                                <input bind:checked={lookFor} on:change={()=>codice = "all"} type="checkbox" />
                                                     <div class="swap-on bg-green-400 rounded text-center text-white font-bold px-2">Norme</div>
                                                     <div class="swap-off bg-secondary rounded text-center text-white font-bold px-2">Sentenze</div>
                                             </label>
@@ -414,8 +414,8 @@
                                 </div>
                                 <div class="card-actions justify-end flex">
                                     <a href={documents[id].url} target="_blank" class="btn btn-sm bg-purple-950 text-white font-roboto hover:bg-purple-800">Vedi</a>
-                                    <button class="btn btn-sm bg-purple-950 text-white font-roboto hover:bg-purple-800" on:click={analysis(id)}>Chiedi a LegalIA</button>
-                                    <button class="btn btn-sm bg-purple-950 text-white font-roboto hover:bg-purple-800" on:click={add_project(1, id)}>Aggiungi a progetto</button>
+                                    <button class="btn btn-sm bg-purple-950 text-white font-roboto hover:bg-purple-800" on:click={()=>analysis(id)}>Chiedi a LegalIA</button>
+                                    <button class="btn btn-sm bg-purple-950 text-white font-roboto hover:bg-purple-800" on:click={()=>add_project(1, id)}>Aggiungi a progetto</button>
                                 </div>
                             </div>
                         </div>
@@ -440,7 +440,7 @@
                                 <p class="font-semibold">{norma.content}</p>
                                 <div class="card-actions justify-end flex">
                                     <a href={norma.url} target="_blank" class="btn btn-sm bg-purple-950 text-white font-roboto hover:bg-purple-800">Vedi</a>
-                                    <button class="btn btn-sm bg-purple-950 text-white font-roboto hover:bg-purple-800" on:click={add_project(0, norma.id)}>Aggiungi a progetto</button>
+                                    <button class="btn btn-sm bg-purple-950 text-white font-roboto hover:bg-purple-800" on:click={()=>add_project(0, norma.id)}>Aggiungi a progetto</button>
                                 </div>
                             </div>
                         </div>

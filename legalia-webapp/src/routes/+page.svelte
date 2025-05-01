@@ -1,11 +1,11 @@
 <script>
     import '../app.css';
-    import Navbar from '$lib/components/navbar/navbar1.svelte';
-    import BetaTesterForm from '$lib/components/betaTesterForm/betaTesterForm.svelte';
+    import Navbar from '$lib/components/navbar/Navbar1.svelte';
+    import BetaTesterForm from '$lib/components/betatesterform/BetaTesterForm.svelte';
     import { onMount } from 'svelte';
-    import Hero from '$lib/components/hero/hero.svelte';
-    import MyParticles from '$lib/components/particles/myParticles.svelte';
-    import Stats from '$lib/components/stats/stats.svelte';
+    import Hero from '$lib/components/hero/Hero.svelte';
+    import MyParticles from '$lib/components/particles/MyParticles.svelte';
+    import Stats from '$lib/components/stats/Stats.svelte';
 
     // Dati per i messaggi della chat
     const messages = [
