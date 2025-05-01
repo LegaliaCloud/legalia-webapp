@@ -1,25 +1,29 @@
 <script lang="ts">
-  import type { Sentenza } from "./ResearchModule.svelte";
-  import { dateFormat } from "../misc/UsefulFunctions.svelte";
+	import type { Sentenza } from './ResearchModule.svelte';
+	import { dateFormat } from '../misc/UsefulFunctions.svelte';
 
-  export let sentenza:Sentenza;
-  //let sentenzaContentModal;
+	export let sentenza: Sentenza;
+	//let sentenzaContentModal;
 </script>
+
 <!--role="button" tabindex="0" on:dblclick={sentenzaContentModal.showModal()}-->
-<div class="w-full flex items-center rounded-lg border-l-4 transition-colors duration-200 my-2 p-0">
-    <div class="flex-grow min-w-0 rounded-md py-3 px-2 bg-white text-black hover:bg-gray-200" style="min-width: 75%;">
-      <p class="text-md font-medium truncate text" style="width: 90%">
-        {sentenza.description.split(" \n")[0]}
-      </p>
-      <div class="grid grid-cols-2">
-        <div class="col-span-1">
-            <p class="text-xs">Data: {dateFormat(sentenza.dep_date).split(" ")[0]}</p>
-        </div>
-        <div class="col-span-1">
-            <p class="text-xs">Numero: {sentenza.number}</p>
-        </div>
-      </div>
-    </div> 
+<div class="my-2 flex w-full items-center rounded-lg border-l-4 p-0 transition-colors duration-200">
+	<div
+		class="min-w-0 flex-grow rounded-md bg-white px-2 py-3 text-black hover:bg-gray-200"
+		style="min-width: 75%;"
+	>
+		<p class="text-md text truncate font-medium" style="width: 90%">
+			{sentenza.description.split(' \n')[0]}
+		</p>
+		<div class="grid grid-cols-2">
+			<div class="col-span-1">
+				<p class="text-xs">Data: {dateFormat(sentenza.dep_date).split(' ')[0]}</p>
+			</div>
+			<div class="col-span-1">
+				<p class="text-xs">Numero: {sentenza.number}</p>
+			</div>
+		</div>
+	</div>
 </div>
 
 <!--<dialog bind:this={sentenzaContentModal} class="modal">
@@ -35,26 +39,26 @@
 </dialog>-->
 
 <style>
-  /* Stile della scrollbar (per Chrome, Edge e Safari) */
-  ::-webkit-scrollbar {
-      width: 8px;  /* larghezza della scrollbar verticale */
-      height: 8px; /* altezza della scrollbar orizzontale */
-      }
-      
-  /* Stile della "maniglia" della scrollbar */
-  ::-webkit-scrollbar-thumb {
-      background-color: #b0b0b0;  /* colore chiaro */
-      border-radius: 4px;  /* bordi arrotondati */
-  }
-      
-  /* Al passaggio del mouse sulla scrollbar */
-  ::-webkit-scrollbar-thumb:hover {
-      background-color: #868686;  /* leggermente più scuro al passaggio del mouse */
-  }
-      
-  /* Stile della "traccia" della scrollbar */
-  ::-webkit-scrollbar-track {
-      background-color: #d3cada;  /* sfondo ancora più chiaro */
-      border-radius: 4px;  /* bordi arrotondati */
-  }
+	/* Stile della scrollbar (per Chrome, Edge e Safari) */
+	::-webkit-scrollbar {
+		width: 8px; /* larghezza della scrollbar verticale */
+		height: 8px; /* altezza della scrollbar orizzontale */
+	}
+
+	/* Stile della "maniglia" della scrollbar */
+	::-webkit-scrollbar-thumb {
+		background-color: #b0b0b0; /* colore chiaro */
+		border-radius: 4px; /* bordi arrotondati */
+	}
+
+	/* Al passaggio del mouse sulla scrollbar */
+	::-webkit-scrollbar-thumb:hover {
+		background-color: #868686; /* leggermente più scuro al passaggio del mouse */
+	}
+
+	/* Stile della "traccia" della scrollbar */
+	::-webkit-scrollbar-track {
+		background-color: #d3cada; /* sfondo ancora più chiaro */
+		border-radius: 4px; /* bordi arrotondati */
+	}
 </style>
