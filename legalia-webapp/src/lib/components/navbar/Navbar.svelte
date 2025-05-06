@@ -15,7 +15,7 @@
     </div>
     <div class="navbar-end">
       <ul class="menu menu-horizontal px-1 mr-4">
-        <li><a class="font-bold text-purple-800 mx-2" href="./app">Chatbot</a></li>
+        <li><a class="font-bold text-purple-800 mx-2" href="./app">Dashboard</a></li>
         <li><a class="font-bold text-purple-800 mx-2" href="./search">Ricerca</a></li>
       </ul>
       <div class="dropdown dropdown-end">

@@ -42,6 +42,7 @@
                 
                 // Salva l'authentication header in sessione
                 sessionStorage.setItem('authHeader', authHeader);
+                sessionStorage.setItem('username', username);
                 goto('/app');
             } catch (error) {
                 console.error('Errore durante l\'autenticazione:', error);

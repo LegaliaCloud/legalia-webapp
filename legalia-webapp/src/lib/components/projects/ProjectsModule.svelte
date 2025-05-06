@@ -130,7 +130,7 @@
         }
     }
 
-    async function get_norme_sentenze(authHeader:string){
+    export async function get_norme_sentenze(authHeader:string){
         let sentenzeList:Sentenza[] = [];
         let normeList:Norma[] = [];
         const activeProject = await get_active_project(activeProjectId, authHeader);

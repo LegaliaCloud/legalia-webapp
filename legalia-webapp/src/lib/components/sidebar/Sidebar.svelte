@@ -80,11 +80,11 @@
   onMount(get_projects);
 </script>
 
-<div class="rounded-r-lg text-gray-200 pt-3 px-1 h-full w-full flex flex-col" style="height: 87vh; background: linear-gradient(170deg, #3b0764 30%, #712da4);">
+<div class="rounded-r-lg text-white px-1 h-full w-full flex flex-col" style="height: 87vh; background: linear-gradient(170deg, #3b0764 30%, #712da4);">
     <!-- Projects Section -->
-  <div class="flex-1 flex flex-col px-5 overflow-y-auto" style="min-height: 40%; max-height: 40%; max-width:100%;">
-    <ul class="menu w-full mb-2">
-      <li class="menu-title text-xl text-purple-100 w-full">I tuoi progetti</li>
+  <p class="font-bold text-center text-xl py-3 w-full">I tuoi progetti</p>
+  <div class="overflow-x-hidden overflow-y-auto px-5" style="min-height: 30%; max-height: 30%; max-width:100%;">
+    <ul class="menu h-full w-full">
       {#each projects_list as project}
         <li class="my-1"><Projectitem id={project.id} projectname={project.name} active={project.state == "active"}/></li>
       {/each}
@@ -95,9 +95,9 @@
   </div>
 
   <!-- Separator Line -->
-  <div class="border-t border-purple-900 my-4"></div>
-  
-  <div class="overflow-y-auto">
+  <div class="border-t border-purple-900 mt-2"></div>
+  <p class="font-bold text-center text-xl py-3 w-full">I tuoi file</p>
+  <div class="overflow-y-auto overflow-x-hidden px-5" style="max-height: 30%; max-width:100%;">
     <Fileexplorer></Fileexplorer>
   </div>
 

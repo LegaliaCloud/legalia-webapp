@@ -21,7 +21,7 @@
         <!-- svelte-ignore a11y-no-noninteractive-tabindex -->
         <ul tabindex="0" class="menu menu-sm dropdown-content bg-purple-950 rounded-box mt-3 w-52 p-2 shadow">
           {#if $page.url.pathname === '/search'}
-            <li><a href="/app">Chatbot</a></li>
+            <li><a href="/app">Dashboard</a></li>
             <li><a href="/search">Ricerca</a></li>
           {:else if $page.url.pathname === "/"}
             <li><a href="#chi-siamo">Chi siamo</a></li>
@@ -37,7 +37,7 @@
     <div class="navbar-end hidden lg:flex">
       <ul class="menu menu-horizontal px-1">
         {#if $page.url.pathname === '/search'}
-            <li class="font-bold mx-2"><a href="/app">Chatbot</a></li>
+            <li class="font-bold mx-2"><a href="/app">Dashboard</a></li>
             <li class="font-bold mx-2"><a href="/search">Ricerca</a></li>
         {:else if $page.url.pathname === "/"}
             <li><a class="font-bold mx-2" href="#chi-siamo">Chi siamo</a></li>

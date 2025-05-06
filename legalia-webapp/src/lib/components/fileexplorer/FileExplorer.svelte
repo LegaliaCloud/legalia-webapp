@@ -1,6 +1,6 @@
 <script lang="ts">
     import Fileicon from "../misc/FileIcon.svelte";
-	//import Foldericon from "../misc/foldericon.svelte";
+	import Foldericon from "../misc/foldericon.svelte";
     import { onMount } from "svelte";
     import {files, get_files} from "./FilesModule.svelte";
     $: filesList = $files;
@@ -8,16 +8,14 @@
     onMount(get_files);
 </script>
 
-<div class="flex-1 flex flex-col pl-5" style="min-height: 50%;">
     <ul class="menu menu-xs rounded-lg w-full max-w-xs text-xl">
-    <li class="menu-title text-xl text-purple-100 mb-5">I tuoi file</li>
     
     {#each filesList as file}
         <!-- svelte-ignore a11y-missing-attribute -->
         <li><a><Fileicon></Fileicon>{file.name}</a></li>
     {/each}
-    <!--
-    <li>
+
+    <!--<li>
         <details open>
         <summary>
             <Foldericon></Foldericon>
@@ -84,4 +82,28 @@
         </a>
     </li>-->
     </ul>
-</div>
+
+<style>
+    /* Stile della scrollbar (per Chrome, Edge e Safari) */
+    ::-webkit-scrollbar {
+        width: 8px;  /* larghezza della scrollbar verticale */
+        height: 8px; /* altezza della scrollbar orizzontale */
+        }
+        
+    /* Stile della "maniglia" della scrollbar */
+    ::-webkit-scrollbar-thumb {
+        background-color: #b0b0b0;  /* colore chiaro */
+        border-radius: 4px;  /* bordi arrotondati */
+    }
+        
+    /* Al passaggio del mouse sulla scrollbar */
+    ::-webkit-scrollbar-thumb:hover {
+        background-color: #868686;  /* leggermente più scuro al passaggio del mouse */
+    }
+        
+    /* Stile della "traccia" della scrollbar */
+    ::-webkit-scrollbar-track {
+        background-color: #4f1c76;  /* sfondo ancora più chiaro */
+        border-radius: 4px;  /* bordi arrotondati */
+    }
+  </style>

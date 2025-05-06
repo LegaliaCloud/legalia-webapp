@@ -1,5 +1,5 @@
 <script lang="ts">
-    let username = 'You'
+    let username = sessionStorage.getItem('username')
     export let text:String;
 </script>
 
@@ -11,7 +11,7 @@
           src="./img/user.png" />
       </div>
     </div>
-    <div class="chat-header pr-2">
+    <div class="chat-header text-white pr-2">
         {username}
     </div>
     <div class="chat-bubble bg-green-200 text-black">{@html text}</div>

@@ -296,7 +296,7 @@
       <button on:click={()=>customRequestModal.showModal()} class="btn rounded-full my-1 bg-transparent border-transparent tooltip capitalize text-white hover:bg-green-400 hover:border-green-400" data-tip="Genera report chat"><Reporticon /></button>      <br>
       <button on:click={()=>generateDefenseModal.showModal()} class="btn rounded-full my-1 bg-transparent border-transparent tooltip capitalize text-white hover:bg-green-400 hover:border-green-400" data-tip="Genera linee difensive"><Shildicon /></button>
     </div>
-    <div bind:this={chat_container} class="absolute top-2 overflow-y-auto px-1" style="width: 100%; height:80%;">
+    <div bind:this={chat_container} class="absolute top-2 overflow-y-auto {chat.length>0 ? 'pl-14 pr-1' : 'px-1'}"  style="width: 100%; height:80%;">
       {#if chat.length == 0}
       <div class="text-center text-white mt-2 mx-12">
         <div class="avatar">
@@ -355,7 +355,7 @@
   </div>
 </div>
 
-<div class="divider divider-purple-950 text-purple-950 mx-3">Storico conversazioni<button on:click={() => {chat = []}} class="btn btn-xs bg-purple-950 text-white tooltip capitalize" data-tip="New Chat"><NewChatIcon /></button></div>
+<div class="divider divider-purple-950 text-purple-950 mx-3">Storico conversazioni<button on:click={() => {chat = []}} class="btn btn-xs bg-purple-950 text-white tooltip capitalize" data-tip="Nuova Chat"><NewChatIcon /></button></div>
 
 <div class="flex max-w-full overflow-x-auto">
   {#each history as chat}

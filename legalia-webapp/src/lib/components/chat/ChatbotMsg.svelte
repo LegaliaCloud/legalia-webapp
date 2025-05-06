@@ -11,8 +11,8 @@
           src="/img/AI.png" />
       </div>
     </div>
-    <div class="chat-header pl-2">
-      Legal IA
+    <div class="chat-header text-white pl-2">
+      Legalia
     </div>
     <div class="chat-bubble bg-purple-300 text-black text-wrap">
       {@html marked(text)}
