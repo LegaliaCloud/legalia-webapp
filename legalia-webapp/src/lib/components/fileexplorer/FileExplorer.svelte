@@ -1,14 +1,14 @@
 <script lang="ts">
-    import Fileicon from "../misc/FileIcon.svelte";
-	import Foldericon from "../misc/foldericon.svelte";
-    import { onMount } from "svelte";
-    import {files, get_files} from "./FilesModule.svelte";
-    $: filesList = $files;
+	import Fileicon from '../misc/FileIcon.svelte';
+	//import Foldericon from "../misc/foldericon.svelte";
+	import { onMount } from 'svelte';
+	import { files, get_files } from './FilesModule.svelte';
+	$: filesList = $files;
 
-    onMount(get_files);
+	onMount(get_files);
 </script>
 
-    <ul class="menu menu-xs rounded-lg w-full max-w-xs text-xl">
+<ul class="menu menu-xs rounded-lg w-full max-w-xs text-xl">
     
     {#each filesList as file}
         <!-- svelte-ignore a11y-missing-attribute -->
@@ -81,7 +81,8 @@
         reports-final-2.pdf
         </a>
     </li>-->
-    </ul>
+
+</ul>
 
 <style>
     /* Stile della scrollbar (per Chrome, Edge e Safari) */
@@ -106,4 +107,4 @@
         background-color: #4f1c76;  /* sfondo ancora più chiaro */
         border-radius: 4px;  /* bordi arrotondati */
     }
-  </style>
+</style>

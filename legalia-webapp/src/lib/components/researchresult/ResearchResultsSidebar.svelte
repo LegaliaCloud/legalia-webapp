@@ -1,6 +1,6 @@
 <script lang="ts">
     import Searchicon from "../misc/SearchIcon.svelte";
-    import ResultSentenza from "./ResultSentenza.svelte";
+    import SentenzaResult from "./ResultSentenza.svelte";
     import NormaResult from "./NormaResult.svelte";
     import { sentenze, norme, get_norme_sentenze} from "../projects/ProjectsModule.svelte";
 	import { onMount } from "svelte";
@@ -52,7 +52,7 @@
     <div class="overflow-y-auto w-full pr-2 my-2" style="min-height: 37%; max-height: 37%;">
         {#if sentenzeList.length > 0}
             {#each sentenzeList as sentenza}
-                <ResultSentenza {sentenza}/>
+                <SentenzaResult {sentenza}/>
             {/each}
         {:else}
             <p class="text-center text-sm text-white">Ricerca le senteze più adatte al tuo caso dal nostro motore di ricerca e aggiungile al tuo progetto per poterle allegare alla chat con LegalIA</p>
@@ -62,26 +62,26 @@
 </div>
 
 <style>
-    /* Stile della scrollbar (per Chrome, Edge e Safari) */
-    ::-webkit-scrollbar {
-        width: 8px;  /* larghezza della scrollbar verticale */
-        height: 8px; /* altezza della scrollbar orizzontale */
-        }
-        
-    /* Stile della "maniglia" della scrollbar */
-    ::-webkit-scrollbar-thumb {
-        background-color: #b0b0b0;  /* colore chiaro */
-        border-radius: 4px;  /* bordi arrotondati */
-    }
-        
-    /* Al passaggio del mouse sulla scrollbar */
-    ::-webkit-scrollbar-thumb:hover {
-        background-color: #868686;  /* leggermente più scuro al passaggio del mouse */
-    }
-        
-    /* Stile della "traccia" della scrollbar */
-    ::-webkit-scrollbar-track {
-        background-color: #4f1c76;  /* sfondo ancora più chiaro */
-        border-radius: 4px;  /* bordi arrotondati */
-    }
+	/* Stile della scrollbar (per Chrome, Edge e Safari) */
+	::-webkit-scrollbar {
+		width: 8px; /* larghezza della scrollbar verticale */
+		height: 8px; /* altezza della scrollbar orizzontale */
+	}
+
+	/* Stile della "maniglia" della scrollbar */
+	::-webkit-scrollbar-thumb {
+		background-color: #b0b0b0; /* colore chiaro */
+		border-radius: 4px; /* bordi arrotondati */
+	}
+
+	/* Al passaggio del mouse sulla scrollbar */
+	::-webkit-scrollbar-thumb:hover {
+		background-color: #868686; /* leggermente più scuro al passaggio del mouse */
+	}
+
+	/* Stile della "traccia" della scrollbar */
+	::-webkit-scrollbar-track {
+		background-color: #4f1c76; /* sfondo ancora più chiaro */
+		border-radius: 4px; /* bordi arrotondati */
+	}
 </style>
