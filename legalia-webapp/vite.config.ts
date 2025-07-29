@@ -9,71 +9,71 @@ export default defineConfig({
 	server: {
 		proxy: {
 			'/search/document': {
-				target: 'http://localhost:8000',
+				target: 'http://www.legalia.cloud:8000',
 				changeOrigin: true
 			},
 			'/search/sentenze/documents': {
-				target: 'http://localhost:8000',
+				target: 'http://www.legalia.cloud:8000',
 				changeOrigin: true
 			},
 			'/search/sentenze/reranker': {
-				target: 'http://localhost:8000',
+				target: 'http://www.legalia.cloud:8000',
 				changeOrigin: true
 			},
 			'/search/sentenze/analysis': {
-				target: 'http://localhost:8000',
+				target: 'http://www.legalia.cloud:8000',
 				changeOrigin: true
 			},
 			'/search/chat': {
-				target: 'http://localhost:8000',
+				target: 'http://www.legalia.cloud:8000',
 				changeOrigin: true
 			},
 			'/search/norme/': {
-				target: 'http://localhost:8000',
+				target: 'http://www.legalia.cloud:8000',
 				changeOrigin: true
 			},
 			'/chat/create/': {
-				target: 'http://localhost:8000',
+				target: 'http://www.legalia.cloud:8000',
 				changeOrigin: true
 			},
 			'/chat/complete': {
-				target: 'http://localhost:8000',
+				target: 'http://www.legalia.cloud:8000',
 				changeOrigin: true
 			},
 			'/chat/all': {
-				target: 'http://localhost:8000',
+				target: 'http://www.legalia.cloud:8000',
 				changeOrigin: true
 			},
 			'/chat/get/': {
-				target: 'http://localhost:8000',
+				target: 'http://www.legalia.cloud:8000',
 				changeOrigin: true
 			},
 			'/project/': {
-				target: 'http://localhost:8000',
+				target: 'http://www.legalia.cloud:8000',
 				changeOrigin: true
 			},
 			'/project/add': {
-				target: 'http://localhost:8000',
+				target: 'http://www.legalia.cloud:8000',
 				changeOrigin: true
 			},
 			'/project/toggle/': {
-				target: 'http://localhost:8000',
+				target: 'http://www.legalia.cloud:8000',
 				changeOrigin: true
 			},
 			'/files/all': {
-				target: 'http://localhost:8000',
+				target: 'http://www.legalia.cloud:8000',
 				changeOrigin: true
 			},
 			'/files/upload': {
-				target: 'http://localhost:8000',
+				target: 'http://www.legalia.cloud:8000',
 				changeOrigin: true
 			},
 			'/generate/defense': {
-				target: 'http://localhost:8000',
+				target: 'http://www.legalia.cloud:8000',
 				changeOrigin: true
 			},
 			'/generate/report': {
-				target: 'http://localhost:8000',
+				target: 'http://www.legalia.cloud:8000',
 				changeOrigin: true
 			}
 		},
@@ -82,7 +82,7 @@ export default defineConfig({
 		allowedHosts: [
 		'localhost',
 		'127.0.0.1',
-		'www.legalia.cloud'
+		'localhost'
 		]
 	}
 });
