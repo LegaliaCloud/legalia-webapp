@@ -4,7 +4,6 @@
 	import { onMount } from 'svelte';
 	import { get_files } from '../fileexplorer/FilesModule.svelte';
 	import { projects, get_projects } from '../projects/ProjectsModule.svelte';
-	import { json } from '@sveltejs/kit';
 
 	$: projects_list = $projects;
 	let newProjectName = '',
@@ -35,9 +34,10 @@
 					let error = `Errore HTTP: ${response.status}`;
 					throw new Error(error);
 				}
-				get_projects();
 			} catch (err) {
 				console.log(err);
+			} finally {
+				await get_projects();
 			}
 		}
 	}
@@ -82,7 +82,7 @@
 </script>
 
 <div
-	class="rounded-r-lg text-white px-1 h-full w-full flex flex-col"
+	class="rounded-r-lg text-white px-1 h-full w-full"
 	style="height: 87vh; background: linear-gradient(170deg, #3b0764 30%, #712da4);"
 >
     <!-- Projects Section -->

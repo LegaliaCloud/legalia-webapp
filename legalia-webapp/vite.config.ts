@@ -75,6 +75,14 @@ export default defineConfig({
 			'/generate/report': {
 				target: 'http://www.legalia.cloud:8000',
 				changeOrigin: true
+			},
+			'/safeguard/projects/': {
+				target: 'http://www.legalia.cloud:8000',
+				changeOrigin: true
+			},
+			'/safeguard/attention-points/': {
+				target: 'http://www.legalia.cloud:8000',
+				changeOrigin: true
 			}
 		},
 		host: '0.0.0.0',

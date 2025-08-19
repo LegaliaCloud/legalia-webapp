@@ -26,12 +26,12 @@
 	<!-- svelte-ignore a11y-click-events-have-key-events -->
 	<div on:dblclick={handleOpenModal} class="flex-grow min-w-0 rounded-md py-3 px-4 bg-white text-black hover:bg-gray-200">
 		<div class="flex justify-between items-center">
-		<div class="w-full">
-			<p class="text-md font-medium truncate">
-			Art. {norma.articolo} {norma.codice}
-			</p>
-			<p class="text-xs truncate mr-1" style="width:90%">Rubrica: {norma.rubrica}</p>
-		</div>
+			<div class="w-full">
+				<p class="text-md font-medium truncate">
+				Art. {norma.articolo} {norma.codice}
+				</p>
+				<p class="text-xs truncate mr-1" style="width:90%">Rubrica: {norma.rubrica}</p>
+			</div>
 			<!--<button class="btn btn-sm ml-4" on:click={handleOpenModal}>Dettagli</button>-->
 		</div>
 	</div>
