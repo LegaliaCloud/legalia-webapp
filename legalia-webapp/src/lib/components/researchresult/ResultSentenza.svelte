@@ -58,26 +58,29 @@
 </script>
 
 <!-- Sentenza container -->
-<div id={rowId} class="w-full flex justify-between items-center rounded-lg border-l-4 transition-colors duration-200 my-2 bg-white hover:bg-gray-200 p-3 group">
+<div id={rowId} class="w-full flex items-center rounded-lg border-l-4 transition-colors duration-200 my-2">
 	<!-- Parte cliccabile -->
-	<div on:dblclick={handleOpenModal} class="flex-grow min-w-0 cursor-pointer">
-		<p class="text-md font-medium truncate">{sentenza.description.split(" \n")[0]}</p>
-		<div class="grid grid-cols-2 text-xs">
-			<p class="col-span-1">Data: {dateFormat(sentenza.dep_date).split(" ")[0]}</p>
-			<p class="col-span-1">Numero: {sentenza.number}</p>
+	<!-- svelte-ignore a11y-no-static-element-interactions -->
+	<div on:dblclick={handleOpenModal} class="flex min-w-full rounded-md py-3 px-4 bg-white text-black hover:bg-gray-200">
+		<div style="max-width:85%; min-width:85%;">
+			<p class="text-md font-medium truncate mr-2">{sentenza.description.split(" \n")[0]}</p>
+			<div class="grid grid-cols-2 text-xs">
+				<p class="col-span-1">Data: {dateFormat(sentenza.dep_date).split(" ")[0]}</p>
+				<p class="col-span-1">Numero: {sentenza.number}</p>
+			</div>
+		</div>
+		<div>
+			<button
+				class="btn btn-sm btn-circle btn-error opacity-80 group-hover:opacity-100 transition"
+				on:click={openDeleteConfirmation}
+			>
+				<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+						d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6M1 7h22M8 7V4a1 1 0 011-1h6a1 1 0 011 1v3" />
+				</svg>
+			</button>
 		</div>
 	</div>
-
-	<!-- Bottone cestino -->
-	<button
-		class="btn btn-sm btn-circle btn-error opacity-80 group-hover:opacity-100 transition"
-		on:click={openDeleteConfirmation}
-	>
-		<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-			<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-				d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6M1 7h22M8 7V4a1 1 0 011-1h6a1 1 0 011 1v3" />
-		</svg>
-	</button>
 </div>
 
 <!-- Modale di conferma -->

@@ -300,42 +300,43 @@
 	});
 
 	let confirmDeleteModal: HTMLDialogElement;
-let deleteTarget: { chat_id: number; title: string } = { chat_id: -1, title: '' };
+	let deleteTarget: { chat_id: number; title: string } = { chat_id: -1, title: '' };
 
-function openDeleteConfirmation(chat_id: number, title: string) {
-	deleteTarget = { chat_id, title };
-	confirmDeleteModal?.showModal();
-}
+	function openDeleteConfirmation(chat_id: number, title: string) {
+		deleteTarget = { chat_id, title };
+		confirmDeleteModal?.showModal();
+	}
 
-async function confirmDelete() {
-    const chat_id = deleteTarget.chat_id;
-    const row = document.getElementById("chat-row-" + chat_id);
-    if (row) row.classList.add("fade-out");
+	async function confirmDelete() {
+		const chat_id = deleteTarget.chat_id;
+		const row = document.getElementById("chat-row-" + chat_id);
+		if (row) row.classList.add("fade-out");
 
-    await new Promise((res) => setTimeout(res, 400));
+		await new Promise((res) => setTimeout(res, 400));
 
-    const authHeader = sessionStorage.getItem("authHeader");
-	
-    try {
-	const response = await fetch(`/chat/${chat_id}`, {
-	method: 'DELETE',
-    headers: {
-        'Content-Type': 'application/json',
-        'Authorization': authHeader ?? ''
-    }
-});
-        if (response.ok) {
-            chat_history.update((list) => list.filter((c) => c.chat_id !== chat_id));
-        } else {
-            console.error(await response.text());
-            alert("Errore durante l'eliminazione");
-        }
-    } catch (err) {
-        console.error(err);
-    } finally {
-        confirmDeleteModal?.close();
-    }
-}
+		const authHeader = sessionStorage.getItem("authHeader");
+		if(authHeader != null){
+			try {
+				const response = await fetch(`/chat/${chat_id}`, {
+					method: 'DELETE',
+					headers: {
+						Authorization: authHeader,
+						'Content-Type': 'application/json'	
+					}
+				});
+				if (response.ok) {
+					chat_history.update((list) => list.filter((c) => c.chat_id !== chat_id));
+				} else {
+					console.error(await response.text());
+					alert("Errore durante l'eliminazione");
+				}
+			} catch (err) {
+				console.error(err);
+			} finally {
+				confirmDeleteModal?.close();
+			}
+		}
+	}
 </script>
 
 <div
