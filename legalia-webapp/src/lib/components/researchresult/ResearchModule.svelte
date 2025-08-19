@@ -6,7 +6,7 @@
 		position_index: number;
 		content: string;
 		number: string;
-		depDate: string;
+		dep_date: string;
 		description: string;
 		url: string;
 		massima: string;

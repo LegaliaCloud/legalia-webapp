@@ -48,6 +48,14 @@ export default defineConfig({
 				target: 'http://www.legalia.cloud:8000',
 				changeOrigin: true
 			},
+			'/chat/': {
+			target: 'http://www.legalia.cloud:8000',
+			changeOrigin: true
+			},
+			'/chat/delete/': {
+				target: 'http://www.legalia.cloud:8000',
+				changeOrigin: true
+			},
 			'/project/': {
 				target: 'http://www.legalia.cloud:8000',
 				changeOrigin: true
@@ -65,6 +73,10 @@ export default defineConfig({
 				changeOrigin: true
 			},
 			'/files/upload': {
+				target: 'http://www.legalia.cloud:8000',
+				changeOrigin: true
+			},
+			'/files/delete': {
 				target: 'http://www.legalia.cloud:8000',
 				changeOrigin: true
 			},

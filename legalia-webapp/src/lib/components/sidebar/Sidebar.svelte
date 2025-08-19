@@ -88,11 +88,18 @@
     <!-- Projects Section -->
 	<p class="font-bold text-center text-xl py-3 w-full">I tuoi progetti</p>
 	<div class="overflow-x-hidden overflow-y-auto px-5" style="min-height: 30%; max-height: 30%; max-width:100%;">
-		<ul class="menu h-full w-full">
-		{#each projects_list as project}
-			<li class="my-1"><Projectitem id={project.id} projectname={project.name} active={project.state == "active"}/></li>
-		{/each}
-		</ul>
+		<div class="flex flex-col gap-2">
+	{#each projects_list as project}
+		<Projectitem
+			id={project.id}
+			projectname={project.name}
+			description={project.description}
+			client={project.client}
+			active={project.state == "active"}
+		/>
+	{/each}
+</div>
+
 		</div>
 	<div class="flex justify-center my-2">
 		<button class="btn btn-sm btn-warning rounded-full" on:click={()=>create_project_form.showModal()}>+</button>

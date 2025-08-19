@@ -19,23 +19,88 @@
 	function handleTabChange(tab: string) {
 		activeTab = tab;
 	}
+
+	import { norme } from "../projects/ProjectsModule.svelte";
+import { get } from "svelte/store";
+async function deleteNorma() {
+	try {
+		const id = parseInt(norma.id);
+		const row = document.getElementById("norma-row-" + id);
+		if (row) {
+			row.classList.add("fade-out");
+		}
+
+		await new Promise(resolve => setTimeout(resolve, 400)); // attende animazione
+
+		const authHeader = sessionStorage.getItem("authHeader");
+		const response = await fetch(`/project/delete/norme?norme_ids=${id}`, {
+			method: "DELETE",
+			headers: {
+				Authorization: authHeader ?? ""
+			}
+		});
+
+		if (response.ok) {
+			norme.update(list => list.filter(n => n.id !== id));
+		} else {
+			alert("Errore durante l'eliminazione");
+			console.error(await response.text());
+		}
+	} catch (err) {
+		console.error(err);
+	}
+}
+
+
+function openDeleteConfirmation() {
+	const modal = document.getElementById("confirmDelete-" + norma.id) as HTMLDialogElement;
+	if (modal) modal.showModal();
+}
+
+function confirmDelete() {
+	deleteNorma(); // chiamata principale
+	const modal = document.getElementById("confirmDelete-" + norma.id) as HTMLDialogElement;
+	if (modal) modal.close();
+}
+
+
+
 </script>
 
-<div class="w-full flex items-center rounded-lg border-l-4 transition-colors duration-200 my-2">
-	<!-- svelte-ignore a11y-no-static-element-interactions -->
-	<!-- svelte-ignore a11y-click-events-have-key-events -->
-	<div on:dblclick={handleOpenModal} class="flex-grow min-w-0 rounded-md py-3 px-4 bg-white text-black hover:bg-gray-200">
-		<div class="flex justify-between items-center">
-		<div class="w-full">
-			<p class="text-md font-medium truncate">
+<div id={"norma-row-" + norma.id} class="w-full flex justify-between items-center rounded-lg border-l-4 transition-colors duration-200 my-2 bg-white hover:bg-gray-200 p-3 group">
+	<!-- Info norma -->
+	<div on:dblclick={handleOpenModal} class="flex-grow min-w-0 cursor-pointer">
+		<p class="text-md font-medium truncate">
 			Art. {norma.articolo} {norma.codice}
-			</p>
-			<p class="text-xs truncate mr-1" style="width:90%">Rubrica: {norma.rubrica}</p>
-		</div>
-			<!--<button class="btn btn-sm ml-4" on:click={handleOpenModal}>Dettagli</button>-->
+		</p>
+		<p class="text-xs truncate mr-1" style="width:90%">Rubrica: {norma.rubrica}</p>
+	</div>
+
+	<!-- Cestino -->
+	<button
+		class="btn btn-sm btn-circle btn-error opacity-80 group-hover:opacity-100 transition"
+		on:click={openDeleteConfirmation}
+	>
+		<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+			<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+				d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6M1 7h22M8 7V4a1 1 0 011-1h6a1 1 0 011 1v3" />
+		</svg>
+	</button>
+</div>
+
+<dialog id={"confirmDelete-" + norma.id} class="modal">
+	<div class="modal-box bg-white text-black">
+		<h3 class="font-bold text-lg">Conferma eliminazione</h3>
+		<p class="py-4">Sei sicuro di voler eliminare <strong>Art. {norma.articolo} {norma.codice}</strong>?</p>
+		<div class="modal-action">
+			<form method="dialog" class="space-x-2">
+				<button class="btn" type="submit">Annulla</button>
+				<button class="btn btn-error" type="button" on:click={confirmDelete}>Elimina</button>
+			</form>
 		</div>
 	</div>
-</div>
+</dialog>
+
 
 <dialog id={modalId} class="modal">
 	<div class="modal-box max-w-2xl bg-white text-black">
@@ -146,4 +211,10 @@
 		background-color: #d3cada;
 		border-radius: 4px;
 	}
+
+	.fade-out {
+	opacity: 0;
+	transform: translateX(-20px);
+	transition: opacity 0.4s ease, transform 0.4s ease;
+}
 </style>

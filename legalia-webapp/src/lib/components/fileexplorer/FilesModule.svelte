@@ -29,4 +29,28 @@
 			}
 		}
 	}
+
+export async function delete_file(fileId: number) {
+	const authHeader = sessionStorage.getItem('authHeader');
+	if (authHeader != null) {
+		try {
+			const response = await fetch(`/files/delete/${fileId}`, {
+				method: 'DELETE',
+				headers: {
+					Authorization: authHeader,
+					"Content-Type": "application/json"
+				}
+			});
+			if (!response.ok) {
+				let error = `Errore HTTP: ${response.status}`;
+				throw new Error(error);
+			}
+			files.update(list => list.filter(f => f.id !== fileId));
+		} catch (err) {
+			console.log(err);
+		}
+	}
+}
+
+
 </script>

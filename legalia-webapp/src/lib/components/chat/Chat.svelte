@@ -298,6 +298,44 @@
 	afterUpdate(() => {
 		scrollToBottom();
 	});
+
+	let confirmDeleteModal: HTMLDialogElement;
+let deleteTarget: { chat_id: number; title: string } = { chat_id: -1, title: '' };
+
+function openDeleteConfirmation(chat_id: number, title: string) {
+	deleteTarget = { chat_id, title };
+	confirmDeleteModal?.showModal();
+}
+
+async function confirmDelete() {
+    const chat_id = deleteTarget.chat_id;
+    const row = document.getElementById("chat-row-" + chat_id);
+    if (row) row.classList.add("fade-out");
+
+    await new Promise((res) => setTimeout(res, 400));
+
+    const authHeader = sessionStorage.getItem("authHeader");
+	
+    try {
+	const response = await fetch(`/chat/${chat_id}`, {
+	method: 'DELETE',
+    headers: {
+        'Content-Type': 'application/json',
+        'Authorization': authHeader ?? ''
+    }
+});
+        if (response.ok) {
+            chat_history.update((list) => list.filter((c) => c.chat_id !== chat_id));
+        } else {
+            console.error(await response.text());
+            alert("Errore durante l'eliminazione");
+        }
+    } catch (err) {
+        console.error(err);
+    } finally {
+        confirmDeleteModal?.close();
+    }
+}
 </script>
 
 <div
@@ -419,25 +457,51 @@
 </div>
 
 <div class="flex max-w-full overflow-x-auto">
-	{#each history as chat}
-		<div
-			class="rounded-box mx-8 mb-1 min-w-52 max-w-52 bg-purple-950 px-4 py-2"
-			style=" background: linear-gradient(170deg, #3b0764 30%, #712da4);"
-		>
-			<div class="truncate text-center text-white">
-				<p class="font-bold">{chat.title}</p>
-				<p class="text-sm">{dateFormat(chat.last_update)}</p>
-				<div class="py-1">
-					<button
-						on:click={() => load_chat(chat.chat_id)}
-						class="btn btn-sm rounded-full border-green-200 bg-green-200 capitalize text-black hover:border-green-400 hover:bg-green-400 hover:text-white"
-						>Carica</button
-					>
-				</div>
+	{#each history as chatItem (chatItem.chat_id)}
+	<div
+		id={"chat-row-" + chatItem.chat_id}
+		class="rounded-box mx-8 mb-1 min-w-52 max-w-52 bg-purple-950 px-4 py-2 transition-all duration-300"
+		style=" background: linear-gradient(170deg, #3b0764 30%, #712da4);"
+	>
+		<div class="truncate text-center text-white">
+			<p class="font-bold">{chatItem.title}</p>
+			<p class="text-sm">{dateFormat(chatItem.last_update)}</p>
+			<div class="flex justify-center gap-2 py-1">
+				<button
+					on:click={() => load_chat(chatItem.chat_id)}
+					class="btn btn-sm rounded-full border-green-200 bg-green-200 capitalize text-black hover:border-green-400 hover:bg-green-400 hover:text-white"
+				>
+					Carica
+				</button>
+
+				<!-- Bottone Elimina -->
+				<button
+	class="btn btn-sm btn-error rounded-full capitalize text-white"
+	on:click={() => openDeleteConfirmation(chatItem.chat_id, chatItem.title)}
+>
+	Elimina
+</button>
+
 			</div>
 		</div>
-	{/each}
+	</div>
+{/each}
 </div>
+
+<dialog bind:this={confirmDeleteModal} class="modal">
+	<div class="modal-box bg-white text-black">
+		<h3 class="font-bold text-lg">Conferma eliminazione</h3>
+		<p class="py-4">
+			Sei sicuro di voler eliminare <strong>{deleteTarget.title}</strong>?
+		</p>
+		<div class="modal-action">
+			<form method="dialog" class="space-x-2">
+				<button class="btn" type="submit">Annulla</button>
+				<button class="btn btn-error" type="button" on:click={confirmDelete}>Elimina</button>
+			</form>
+		</div>
+	</div>
+</dialog>
 
 <dialog bind:this={customRequestModal} class="modal">
 	<div class="modal-box bg-white text-black">
@@ -661,4 +725,10 @@
 		background-color: #d3cada; /* sfondo ancora più chiaro */
 		border-radius: 4px; /* bordi arrotondati */
 	}
+
+	.fade-out {
+	opacity: 0;
+	transform: translateX(-20px);
+	transition: opacity 0.4s ease, transform 0.4s ease;
+}
 </style>
