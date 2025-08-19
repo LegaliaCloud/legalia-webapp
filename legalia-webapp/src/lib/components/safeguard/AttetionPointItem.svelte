@@ -1,7 +1,7 @@
 <script lang="ts">
     import CheckIcon from "../misc/CheckIcon.svelte";
     import CancIcon from "../misc/CancIcon.svelte";
-    import { decodeAttentionPointKind, validateAttentionPoint, makeEvident, deleteAttentionPoint } from "./SafeguardModule.svelte";
+    import { decodeAttentionPointKind, updateAttentionPoint, makeEvident } from "./SafeguardModule.svelte";
     import type { AttentionPoint } from "./SafeguardModule.svelte";
 
     export let attentionPoint:AttentionPoint ;
@@ -9,8 +9,8 @@
 
 <div class="w-full flex items-center rounded-lg border-l-4 my-2"
     class:border-green-500={attentionPoint.state === 'human_validated'}
-    class:border-red-700={attentionPoint.state === 'not_validated'}
-    class:border-warning={attentionPoint.state === 'partial_validated'}
+    class:border-red-700={attentionPoint.state === 'discard'}
+    class:border-warning={attentionPoint.state === 'not_validated'}
 >
     <!-- svelte-ignore a11y-click-events-have-key-events -->
     <!-- svelte-ignore a11y-no-static-element-interactions -->
@@ -26,18 +26,20 @@
                 <div>
                     <button class="btn btn-sm bg-transparent border-transparent text-green-500 hover:bg-green-500 hover:border-green-500 hover:text-white tooltip capitalize"
                     data-tip="Valida"
-                    on:click={validateAttentionPoint(attentionPoint)}>
+                    on:click={updateAttentionPoint(attentionPoint, "human_validated")}>
                         <CheckIcon />
                     </button>
                 </div>
             {/if}
-            <div>
-                <button class="btn btn-sm bg-transparent border-transparent text-red-700 hover:bg-red-700 hover:border-red-700 hover:text-white tooltip capitalize"
-                data-tip="Cancella"
-                on:click={deleteAttentionPoint(attentionPoint.id)}>
-                    <CancIcon />
-                </button>
-            </div>
+            {#if attentionPoint.state != 'discard'}
+                <div>
+                    <button class="btn btn-sm bg-transparent border-transparent text-red-700 hover:bg-red-700 hover:border-red-700 hover:text-white tooltip capitalize"
+                    data-tip="Scarta"
+                    on:click={updateAttentionPoint(attentionPoint, "discard")}>
+                        <CancIcon />
+                    </button>
+                </div>
+            {/if}
         </div>
     </div>
 </div>

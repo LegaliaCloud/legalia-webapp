@@ -1,7 +1,8 @@
 <script lang="ts">
     import AttetionPointItem from "./AttetionPointItem.svelte";
-	import { attentionPoints } from "./SafeguardModule.svelte";
+	import { attentionPoints, correctionComleted } from "./SafeguardModule.svelte";
     $: attentionPointsList = $attentionPoints;
+	$: completed = $correctionComleted;
 </script>
 
 <div class="bg-purple-950 h-full w-full rounded-l-xl position-items-center py-6 px-4" style="height: 87vh; background: linear-gradient(170deg, #3b0764 30%, #712da4);">
@@ -14,9 +15,10 @@
         {/each}
     </div>
     <div class="w-full text-center">
-        <button class="btn btn-warning mt-2">Correggi il testo</button>
+        <button class="btn btn-warning mt-2 {!completed ? 'btn-disabled' : ''}">
+			Correggi il testo
+		</button>
     </div>
-
 </div>
 
 <style>

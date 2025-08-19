@@ -1,5 +1,6 @@
 <script lang='ts' context='module'>
 	import { writable, get } from "svelte/store";
+	import AttentionPoints from "./AttentionPoints.svelte";
 
     export interface SgProject {
         id:number,
@@ -33,14 +34,15 @@
 
     export const stateColors: Record<string, string> = {
         human_validated: 'lightgreen',
-        not_validated: 'red',
-        partial_validated: 'yellow'  
+        discard: 'red',
+        not_validated: 'yellow'  
     }
 
     export let activeSgProject = writable<SgProject>();
     export let editorText = writable<string>();
     export let sgProjects = writable<SgProject[]>([]);
     export let attentionPoints = writable<AttentionPoint[]>([]);
+    export let correctionComleted = writable<boolean>();
 
     export function activateSgProject(project:SgProject){
         activeSgProject.set(project);
@@ -122,6 +124,7 @@
                 }
                 let responseData:AttentionPoint[] = await response.json();
                 attentionPoints.set(responseData);
+                checkAttentionPoints();
                 console.log(responseData);
             } catch(err) {
 				console.log(err);
@@ -129,14 +132,14 @@
         }
     }
 
-    export async function validateAttentionPoint(attentionPoint:AttentionPoint){
+    export async function updateAttentionPoint(attentionPoint:AttentionPoint, newState:string){
         const authHeader = sessionStorage.getItem('authHeader');
 		if (authHeader != null) {
             let payload = {
                 text: attentionPoint.text,
                 start_position: attentionPoint.start_position,
                 offset: attentionPoint.offset,
-                state: "human_validated",
+                state: newState,
                 kind: attentionPoint.kind
             };
             try{
@@ -178,6 +181,20 @@
 			} finally {
                 getAttentionPoints(get(activeSgProject).id);
             }
+        }
+    }
+
+    export function checkAttentionPoints(){
+        let attentionPointsList = get(attentionPoints);
+        if(attentionPointsList.length > 0){
+            let completed = true;
+            for(let i=0; i<attentionPointsList.length; i++){
+                if(attentionPointsList[i].state == "not_validated"){
+                    completed = false;
+                    break;
+                }
+            }
+            correctionComleted.set(completed);
         }
     }
     
