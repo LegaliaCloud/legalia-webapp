@@ -22,7 +22,7 @@
 				<Sidebar></Sidebar>
 			</div>
 			<div class="col-span-4">
-				<Plan />
+				<Plan refreshCounter={0} />
 			</div>
 		</div>
 	</div>

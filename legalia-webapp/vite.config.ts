@@ -95,6 +95,10 @@ export default defineConfig({
 			'/safeguard/attention-points/': {
 				target: 'http://www.legalia.cloud:8000',
 				changeOrigin: true
+			},
+			'/plan': {
+				target: 'http://www.legalia.cloud:8000',
+				changeOrigin: true
 			}
 		},
 		host: '0.0.0.0',
