@@ -1,8 +1,10 @@
 <script lang="ts">
     import AttetionPointItem from "./AttetionPointItem.svelte";
-	import { attentionPoints, correctionComleted } from "./SafeguardModule.svelte";
+	import { attentionPoints, correctionComleted, activeSgProject, fixText, isLoading } from "./SafeguardModule.svelte";
     $: attentionPointsList = $attentionPoints;
 	$: completed = $correctionComleted;
+	$: currentSgProject = $activeSgProject;
+	$: loading = $isLoading;
 </script>
 
 <div class="bg-purple-950 h-full w-full rounded-l-xl position-items-center py-6 px-4" style="height: 87vh; background: linear-gradient(170deg, #3b0764 30%, #712da4);">
@@ -15,8 +17,15 @@
         {/each}
     </div>
     <div class="w-full text-center">
-        <button class="btn btn-warning mt-2 {!completed ? 'btn-disabled' : ''}">
-			Correggi il testo
+        <button
+			class="btn btn-warning mt-2 {!completed ||  currentSgProject.status == 'ready' || loading ? 'btn-disabled' : ''}"
+			on:click={fixText}
+		>
+			{#if loading}
+				<span class="loading loading-spinner"></span>Sto correggendo...
+			{:else}
+				Correggi il testo
+			{/if}
 		</button>
     </div>
 </div>

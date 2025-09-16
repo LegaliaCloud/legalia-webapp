@@ -1,7 +1,7 @@
 <script lang="ts">
     import { editorText } from './SafeguardModule.svelte';
     import { marked } from 'marked';
-
+	
     $: text = $editorText;
 </script>
 
@@ -13,12 +13,14 @@
         <p class="text-xl font-bold text-white">SafeGuard</p>
     </div>
     <div style="height: 90%;">
-        <div class="overflow-y-auto rounded-lg bg-white text-black p-4 min-h-full max-h-full">
-            {#if text == null}
-                Non esistono progetti Safeguard.
-            {:else}
-                {@html marked(text)}
-            {/if}
+        <div class="w-full overflow-y-auto rounded-lg bg-white text-black p-4 min-h-full max-h-full">
+            <p class="prose max-w-full">
+				{#if text == null}
+                	Non esistono progetti Safeguard.
+				{:else}
+					{@html marked(text)}
+				{/if}
+			</p>
         </div>
     </div>
 </div>

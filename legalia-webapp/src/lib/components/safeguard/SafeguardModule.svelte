@@ -1,6 +1,5 @@
 <script lang='ts' context='module'>
 	import { writable, get } from "svelte/store";
-	import AttentionPoints from "./AttentionPoints.svelte";
 
     export interface SgProject {
         id:number,
@@ -43,6 +42,7 @@
     export let sgProjects = writable<SgProject[]>([]);
     export let attentionPoints = writable<AttentionPoint[]>([]);
     export let correctionComleted = writable<boolean>();
+    export let isLoading = writable<boolean>(false);
 
     export function activateSgProject(project:SgProject){
         activeSgProject.set(project);
@@ -180,6 +180,33 @@
 				console.log(err);
 			} finally {
                 getAttentionPoints(get(activeSgProject).id);
+            }
+        }
+    }
+
+    export async function fixText(){
+        const authHeader = sessionStorage.getItem('authHeader');
+		if (authHeader != null && get(correctionComleted)) {
+            isLoading.set(true);
+            try{
+                const sgProjectId = get(activeSgProject).id;
+                const response = await fetch(`/safeguard/projects/${sgProjectId}/fix-text`, {
+                    method: 'POST',
+                    headers: {
+                        Authorization: authHeader
+                    },
+                });
+                if(!response.ok){
+                    let error = `Errore HTTP: ${response.status}`;
+					throw new Error(error);
+                }
+                let responseData:SgProject = await response.json();
+                activeSgProject.set(responseData);
+                editorText.set(responseData.text);
+            } catch(err) {
+				console.log(err);
+			} finally {
+                isLoading.set(false);
             }
         }
     }

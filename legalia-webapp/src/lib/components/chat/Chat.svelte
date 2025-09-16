@@ -7,6 +7,7 @@
 	import Removeatteachedicon from '../misc/RemoveAttachedIcon.svelte';
 	import Reporticon from '../misc/ReportIcon.svelte';
 	import Shildicon from '../misc/ShildIcon.svelte';
+	import CreateSgProjectModal from '../safeguard/CreateSgProjectModal.svelte';
 	import { dateFormat } from '../misc/UsefulFunctions.svelte';
 	import { files } from '../fileexplorer/FilesModule.svelte';
 	import { chat_all, chat_history } from './ChatHistoryModule.svelte';
@@ -45,8 +46,17 @@
 	let isLoading = false; // Add loading state
 
 	let context: string = '';
-	let difense_lines: string = '';
+	let defense_lines: string = '';
 	let customRequestModal: HTMLDialogElement;
+
+	let chat_container: HTMLDivElement,
+		atteachedModal: HTMLDialogElement,
+		generateDefenseModal: HTMLDialogElement,
+		defenseLoadingModal:HTMLDialogElement,
+		defenseResultModal: HTMLDialogElement;
+
+	let confirmDeleteModal: HTMLDialogElement;
+	let deleteTarget: { chat_id: number; title: string } = { chat_id: -1, title: '' };
 
 	function indexOfChat(chat_id: number) {
 		let index = -1;
@@ -63,12 +73,14 @@
 		const authHeader = sessionStorage.getItem('authHeader');
 		if (!context || isLoading || authHeader == null) return;
 
-		isLoading = true;
-		difense_lines = '';
+		const final_context = context;
+		generateDefenseModal.close();
+		defenseLoadingModal.showModal();
+		defense_lines = '';
 
 		try {
 			const payload = {
-				context: context,
+				context: final_context,
 				number_of_lines: 3
 			};
 
@@ -86,14 +98,14 @@
 			}
 
 			const text = await response.text();
-			difense_lines = text.trim().replace(/\n\n/g, '<br><br>').replace(/\n/g, ' ');
+			defense_lines = text.replace(/\\n/g, '\n');
+			defense_lines = defense_lines.slice(3, defense_lines.length-1)
 		} catch (err) {
 			console.error(err);
-			difense_lines = 'Si è verificato un errore. Riprova';
+			defense_lines = 'Si è verificato un errore. Riprova';
 		} finally {
-			isLoading = false;
+			defenseLoadingModal.close();
 			defenseResultModal.showModal();
-			generateDefenseModal.close();
 		}
 	}
 
@@ -252,6 +264,9 @@
 				} finally {
 					chatbot_loading = false;
 					chat = [...chat, { sender: 0, text: chatbot_msg }];
+					if(chat.length == 2){
+						chat_all();
+					}
 				}
 			}
 		}
@@ -283,10 +298,6 @@
 
 	onMount(chat_all);
 
-	let chat_container: HTMLDivElement,
-		atteachedModal: HTMLDialogElement,
-		generateDefenseModal: HTMLDialogElement,
-		defenseResultModal: HTMLDialogElement;
 	// Funzione per scorrere automaticamente alla fine della chat
 	function scrollToBottom() {
 		if (chat_container) {
@@ -298,9 +309,6 @@
 	afterUpdate(() => {
 		scrollToBottom();
 	});
-
-	let confirmDeleteModal: HTMLDialogElement;
-	let deleteTarget: { chat_id: number; title: string } = { chat_id: -1, title: '' };
 
 	function openDeleteConfirmation(chat_id: number, title: string) {
 		deleteTarget = { chat_id, title };
@@ -326,6 +334,9 @@
 				});
 				if (response.ok) {
 					chat_history.update((list) => list.filter((c) => c.chat_id !== chat_id));
+					if(chat_id === active_chat){
+						chat = [];
+					}
 				} else {
 					console.error(await response.text());
 					alert("Errore durante l'eliminazione");
@@ -669,27 +680,27 @@
 					bind:value={context}
 					class="textarea w-full bg-neutral-200 text-black"
 					placeholder="Descrizione del caso"
-					disabled={isLoading}
 				></textarea>
 			</div>
 		</div>
 		<div class="text-center">
 			<form method="dialog" on:submit|preventDefault>
-				{#if isLoading}
-					<button class="btn bg-purple-950 capitalize text-white" disabled>
-						<span class="loading loading-spinner"></span>
-						Generando...
-					</button>
-				{:else}
-					<button
-						on:click|preventDefault={generate_defense}
-						class="btn bg-purple-950 capitalize text-white"
-					>
-						Genera
-					</button>
-				{/if}
+				<button
+					on:click|preventDefault={generate_defense}
+					class="btn bg-purple-950 capitalize text-white"
+				>
+					Genera
+				</button>
 			</form>
 		</div>
+	</div>
+</dialog>
+
+<dialog bind:this={defenseLoadingModal} class="modal">
+	<div class="modal-box bg-white text-black text-center text-lg">
+		<h4 class="mb-6 font-bold">LegalIA sta analizzando il caso, potrebbe richiedere alcuni minuti...</h4>
+		<span class="loading loading-ring text-purple-950" style="height: 100px; width: 100px;"></span>
+		<p class="text-sm">Sto pensando...</p>
 	</div>
 </dialog>
 
@@ -697,8 +708,11 @@
 	<div class="modal-box bg-white text-black">
 		<h3 class="text-lg font-bold">Linee difensive</h3>
 		<p class="text-right text-sm">Premi ESC per uscire</p>
-		<div class="my-4 overflow-y-auto rounded-lg bg-neutral-200 p-4" style="max-height: 400px;">
-			{@html marked(difense_lines.replace(/\\n/g, '\n'), { breaks: true })}
+		<div class="prose my-4 overflow-y-auto rounded-lg bg-neutral-200 p-4" style="max-height: 400px;">
+			{@html marked(defense_lines)}
+		</div>
+		<div class="text-center">
+			<CreateSgProjectModal text={defense_lines} message_btn={false}/>
 		</div>
 	</div>
 </dialog>
