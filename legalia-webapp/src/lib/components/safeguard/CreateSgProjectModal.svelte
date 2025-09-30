@@ -6,6 +6,7 @@
 
     let SgProjectTitle:string = '';
 	let createSgProjectModal:HTMLDialogElement;
+	let SgLoadingModal:HTMLDialogElement;
 
     export let text:string;
     export let message_btn:boolean;
@@ -13,11 +14,10 @@
     async function startSafeguardProject(){
 		const authHeader = sessionStorage.getItem('authHeader');
 		if (SgProjectTitle != '' && authHeader != null) {
+			SgLoadingModal.showModal()
 			let payload = { 
 				title: SgProjectTitle,
-				text: text,
-				status: "review",
-				progress: 0
+				text: text
 			};
 			SgProjectTitle = '';
 			try {
@@ -33,11 +33,13 @@
 					let error = `Errore HTTP: ${response.status}`;
 					throw new Error(error);
 				}
-				const newProject:SgProject = await response.json()
-				activateSgProject(newProject)
-				goto('/safeguard')
+				const newProject:SgProject = await response.json();
+				activateSgProject(newProject);
+				goto('/safeguard');
 			} catch (err) {
 				console.log(err);
+			} finally{
+				SgLoadingModal.close()
 			}
 		}
 	}
@@ -52,12 +54,14 @@
 				<ShildIcon />
 	</button>
     {:else}
-    <button 
+	<form method="dialog">
+		<button 
 			class="btn bg-purple-950 capitalize text-white" 
 			on:click={createSgProjectModal.showModal()}
 			>
 				<ShildIcon /> Correggi con SafeGuard
-	</button>
+		</button>
+	</form>
 {/if}
 
 <dialog bind:this={createSgProjectModal} class="modal">
@@ -83,5 +87,13 @@
 				>
 			</form>
 		</div>
+	</div>
+</dialog>
+
+<dialog bind:this={SgLoadingModal} class="modal">
+	<div class="modal-box bg-white text-black text-center text-lg">
+		<h4 class="mb-6 font-bold">LegalIA sta analizzando il testo</h4>
+		<span class="loading loading-ring text-purple-950" style="height: 100px; width: 100px;"></span>
+		<p class="text-sm">Individuo allucinazioni...</p>
 	</div>
 </dialog>

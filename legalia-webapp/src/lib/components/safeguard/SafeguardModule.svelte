@@ -1,7 +1,12 @@
 <script lang='ts' context='module'>
 	import { writable, get } from "svelte/store";
 
-    export interface SgProject {
+    export interface SgProject{
+        project_title:string,
+        pages:SgPage[]
+    }
+
+    export interface SgPage {
         id:number,
         user_id:number,
         project_id:number,
@@ -10,7 +15,8 @@
         title:string,
         text:string,
         status:string,
-        progress:number
+        progress:number,
+        page:number
     }
 
     export interface AttentionPoint {
@@ -38,16 +44,27 @@
     }
 
     export let activeSgProject = writable<SgProject>();
+    export let selectedPage = writable<SgPage>();
     export let editorText = writable<string>();
     export let sgProjects = writable<SgProject[]>([]);
     export let attentionPoints = writable<AttentionPoint[]>([]);
     export let correctionComleted = writable<boolean>();
+    export let projectReady = writable<boolean>();
     export let isLoading = writable<boolean>(false);
 
     export function activateSgProject(project:SgProject){
         activeSgProject.set(project);
-        editorText.set(project.text);
-        getAttentionPoints(project.id);
+        sessionStorage.setItem('currSgProject', project.project_title);
+        selectPage(project.pages[0]);
+        checkProject();
+    }
+
+    export function selectPage(page:SgPage){
+        if(page.title == get(activeSgProject).project_title){
+            selectedPage.set(page);
+            editorText.set(page.text);
+            getAttentionPoints(page.id);
+        }
     }
 
     export async function getSgProjects(){
@@ -66,19 +83,18 @@
                 }
                 let responseData:SgProject[] = await response.json();
                 if(responseData.length > 0){
-                    let activeProject = get(activeSgProject);
-                    if(activeProject != null){
+                    const currProject = sessionStorage.getItem('currSgProject');
+                    if(currProject){
                         for(let i = 0; i < responseData.length; i++){
-                            if(responseData[i].id == activeProject.id){
+                            if(responseData[i].project_title == currProject){
                                 let temp = responseData[0];
                                 responseData[0] = responseData[i];
                                 responseData[i] = temp;
                                 break;
                             }
                         }
-                    } else {
-                        activateSgProject(responseData[0]);
                     }
+                    activateSgProject(responseData[0]);
                 }
                 sgProjects.set(responseData);
             } catch(err) {
@@ -87,11 +103,11 @@
         }
     }
 
-    export async function deleteSgProject(sgProjectId:number){
+    export async function deleteSgProject(sgProjectTitle:string){
         const authHeader = sessionStorage.getItem('authHeader');
-		if (authHeader != null && sgProjectId != get(activeSgProject).id) {
+		if (authHeader != null && sgProjectTitle != get(activeSgProject).project_title) {
             try{
-                const response = await fetch(`/safeguard/projects/${sgProjectId}`, {
+                const response = await fetch(`/safeguard/projects/${sgProjectTitle}/bulk`, {
                     method: 'DELETE',
                     headers: {
                         Authorization: authHeader
@@ -125,7 +141,6 @@
                 let responseData:AttentionPoint[] = await response.json();
                 attentionPoints.set(responseData);
                 checkAttentionPoints();
-                console.log(responseData);
             } catch(err) {
 				console.log(err);
 			}
@@ -155,7 +170,7 @@
                     let error = `Errore HTTP: ${response.status}`;
 					throw new Error(error);
                 }
-                getAttentionPoints(get(activeSgProject).id);
+                getAttentionPoints(get(selectedPage).id);
             } catch(err) {
 				console.log(err);
 			}
@@ -179,7 +194,7 @@
             } catch(err) {
 				console.log(err);
 			} finally {
-                getAttentionPoints(get(activeSgProject).id);
+                getAttentionPoints(get(selectedPage).id);
             }
         }
     }
@@ -189,7 +204,7 @@
 		if (authHeader != null && get(correctionComleted)) {
             isLoading.set(true);
             try{
-                const sgProjectId = get(activeSgProject).id;
+                const sgProjectId = get(selectedPage).id;
                 const response = await fetch(`/safeguard/projects/${sgProjectId}/fix-text`, {
                     method: 'POST',
                     headers: {
@@ -200,14 +215,87 @@
                     let error = `Errore HTTP: ${response.status}`;
 					throw new Error(error);
                 }
-                let responseData:SgProject = await response.json();
-                activeSgProject.set(responseData);
-                editorText.set(responseData.text);
+                let responseData:SgPage = await response.json();
+                await getSgProjects()
+                selectPage(responseData);
             } catch(err) {
 				console.log(err);
 			} finally {
                 isLoading.set(false);
             }
+        }
+    }
+
+    export async function reanalyze(){
+        const authHeader = sessionStorage.getItem('authHeader');
+        const currPage = get(selectedPage);
+		if (authHeader != null && currPage.status === "ready") {
+            isLoading.set(true);
+            try{
+                const response = await fetch(`/safeguard/projects/${currPage.id}/reanalyze`, {
+                    method: 'POST',
+                    headers: {
+                        Authorization: authHeader
+                    },
+                });
+                if(!response.ok){
+                    let error = `Errore HTTP: ${response.status}`;
+					throw new Error(error);
+                }
+                let responseData:SgPage = await response.json();
+                await getSgProjects()
+                selectPage(responseData);
+            } catch(err) {
+				console.log(err);
+			} finally {
+                isLoading.set(false);
+            }
+        }
+    }
+
+    export async function download_pdf(){
+        const authHeader = sessionStorage.getItem('authHeader');
+		if (authHeader != null) {
+            try{
+                const currProject = get(activeSgProject);
+                const response = await fetch(`/safeguard/projects/${currProject.project_title}/download-pdf`, {
+                    method: 'POST',
+                    headers: {
+                        Authorization: authHeader
+                    },
+                });
+                if(!response.ok){
+                    let error = `Errore HTTP: ${response.status}`;
+					throw new Error(error);
+                }
+                // Converti la risposta in un Blob
+				const blob = await response.blob();
+				const url = window.URL.createObjectURL(blob);
+
+				// Estrai il nome del file dall'header Content-Disposition (se presente)
+				const contentDisposition = response.headers.get('content-disposition');
+				let fileName = 'download.pdf'; // Nome di default
+
+				if (contentDisposition) {
+					const match = contentDisposition.match(/filename="?([^"]+)"?/);
+					if (match) {
+						fileName = match[1];
+					}
+				}
+
+				// Crea un link per il download
+				const a = document.createElement('a');
+				a.href = url;
+				a.download = fileName; // Nome del file
+				document.body.appendChild(a);
+				a.click();
+
+				// Pulizia
+				window.URL.revokeObjectURL(url);
+				document.body.removeChild(a);
+            } catch(err) {
+				console.log(err);
+			}
         }
     }
 
@@ -224,9 +312,21 @@
             correctionComleted.set(completed);
         }
     }
+
+    function checkProject(){
+        const pages = get(activeSgProject).pages;
+        let ready = true;
+        for(let i = 0; i<pages.length; i++){
+            if(pages[i].status === "review"){
+                ready = false
+                break;
+            }
+        }
+        projectReady.set(ready);
+    }
     
     export function makeEvident(startPosition:number, offset:number, state:string){
-        let string = get(activeSgProject).text
+        let string = get(selectedPage).text
         let text = string.substring(0, startPosition) + '<span style="background-color: ' + stateColors[state] + '">' + 
             string.substring(startPosition, startPosition+offset) + '</span>' +
             string.substring(startPosition+offset, string.length);

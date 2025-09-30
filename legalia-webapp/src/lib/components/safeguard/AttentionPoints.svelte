@@ -1,32 +1,48 @@
 <script lang="ts">
     import AttetionPointItem from "./AttetionPointItem.svelte";
-	import { attentionPoints, correctionComleted, activeSgProject, fixText, isLoading } from "./SafeguardModule.svelte";
+	import { attentionPoints, correctionComleted, selectedPage, fixText, reanalyze, isLoading } from "./SafeguardModule.svelte";
     $: attentionPointsList = $attentionPoints;
 	$: completed = $correctionComleted;
-	$: currentSgProject = $activeSgProject;
+	$: currentPage = $selectedPage;
 	$: loading = $isLoading;
 </script>
 
 <div class="bg-purple-950 h-full w-full rounded-l-xl position-items-center py-6 px-4" style="height: 87vh; background: linear-gradient(170deg, #3b0764 30%, #712da4);">
-    <div class="text-center mb-4 w-full">
+    <div class="text-center mb-2 w-full">
         <p class="text-xl font-bold text-white">Punti di attenzione</p>
     </div>
-    <div class="overflow-y-auto overflow-x-hidden pr-2" style="min-height: 85%; max-height: 85%;">
+    <div class="overflow-y-auto overflow-x-hidden pr-2" style="min-height: 82%; max-height: 82%;">
 		{#each attentionPointsList as attentionPoint}
             <AttetionPointItem {attentionPoint}/>
         {/each}
     </div>
     <div class="w-full text-center">
-        <button
-			class="btn btn-warning mt-2 {!completed ||  currentSgProject.status == 'ready' || loading ? 'btn-disabled' : ''}"
-			on:click={fixText}
-		>
-			{#if loading}
-				<span class="loading loading-spinner"></span>Sto correggendo...
+		{#if  currentPage}
+			{#if currentPage.status === "review"}
+				<button
+					class="btn btn-warning mt-2 {!completed || loading ? 'btn-disabled' : ''}"
+					on:click={fixText}
+				>
+					{#if loading}
+						<span class="loading loading-spinner"></span>Sto correggendo...
+					{:else}
+						Correggi il testo
+					{/if}
+				</button>
 			{:else}
-				Correggi il testo
+				<button
+					class="btn btn-warning mt-2 {loading ? 'btn-disabled' : ''}"
+					on:click={reanalyze}
+				>
+					{#if loading}
+						<span class="loading loading-spinner"></span>Sto analizzando...
+					{:else}
+						Esegui nuova analisi
+					{/if}
+				</button>
+				<p class="text-xs text-white mt-1">Correzioni totali effettuate: {currentPage.progress + 1}</p>
 			{/if}
-		</button>
+		{/if}
     </div>
 </div>
 

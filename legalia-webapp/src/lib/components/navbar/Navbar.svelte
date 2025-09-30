@@ -17,6 +17,7 @@
     <ul class="menu menu-horizontal px-1 mr-4">
       <li><a class="font-bold text-purple-800 mx-2" href="./app">Dashboard</a></li>
       <li><a class="font-bold text-purple-800 mx-2" href="./search">Ricerca</a></li>
+      <li><a class="font-bold text-purple-800 mx-2" href="./safeguard">SafeGuard</a></li>
     </ul>
     <div class="dropdown dropdown-end">
       <div tabindex="0" role="button" class="btn btn-ghost btn-circle avatar">

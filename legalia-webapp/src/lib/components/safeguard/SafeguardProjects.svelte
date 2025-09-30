@@ -18,7 +18,7 @@
     </div>
     <div class="overflow-y-auto overflow-x-hidden pr-2" style="min-height: 95%; max-height: 95%;">
 		{#each projects as project}
-            <SgProgectItem {project} active={project.id == activeProject.id}></SgProgectItem>
+            <SgProgectItem {project} active={project.project_title == activeProject.project_title}></SgProgectItem>
         {/each}
     </div>
 </div>

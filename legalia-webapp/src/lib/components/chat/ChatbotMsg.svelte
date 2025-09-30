@@ -12,7 +12,7 @@
 		</div>
 	</div>
 	<div class="chat-header pl-2 text-white flex mb-1">
-		<p class="mr-1">Legalia</p>
+		<p class="mr-1">LegalIA</p>
 		{#if text !== '<span class="loading loading-dots loading-md"></span>'}
 			<CreateSgProjectModal {text} message_btn={true}/>
 		{/if}

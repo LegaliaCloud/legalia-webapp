@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { decodeCodici, type Norma } from "./ResearchModule.svelte";
 	import { norme } from "../projects/ProjectsModule.svelte";
-	import { get } from "svelte/store";
 	export let norma: Norma;
 	
 	// State for tab management

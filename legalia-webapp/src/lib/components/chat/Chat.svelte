@@ -217,7 +217,7 @@
 			}
 			if (chat.length == 1) {
 				try {
-					const response = await fetch(`/chat/create/?title=${chat_title}`, {
+					const response = await fetch(`/chat/create?title=${chat_title}`, {
 						headers: { Authorization: authHeader }
 					});
 					if (!response.ok) {

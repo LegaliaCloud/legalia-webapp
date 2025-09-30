@@ -16,7 +16,7 @@
 >
     <div class="min-w-0 flex-grow rounded-md bg-purple-900 py-3" style="min-width: 75%;">
         <p class="text-md text truncate pl-2 font-medium text-gray-100" style="width: 90%">
-            {project.title}
+            {project.project_title}
         </p>
     </div>
     {#if !active}
@@ -39,7 +39,7 @@
                 </li>
                 <li><button
                     class="btn btn-error text-center align-middle"
-                    on:click={deleteSgProject(project.id)}
+                    on:click={deleteSgProject(project.project_title)}
                     >Elimina progetto</button></li>
             </ul>
         </div>
